@@ -21,7 +21,6 @@ import {
   QrCode,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Stethoscope,
   Volume2,
   VolumeX,
@@ -31,6 +30,7 @@ import { useAuthStore } from '../../../store/authStore';
 import { useLanguageStore } from '../../../services/language/LanguageManager';
 import { useVoiceAssistantStore } from '../../../services/voice/VoiceInstructionEngine';
 import { MotionReveal } from '../../../components/motion/Reveal';
+import { seniorScreensCopyByLang } from './seniorScreensCopy';
 import {
   Card,
   InfoRow,
@@ -50,6 +50,8 @@ export const AshaCompanionPage: React.FC = () => {
   const { currentLanguage } = useLanguageStore();
   const { speak, isSpeaking, stopSpeaking } = useVoiceAssistantStore();
 
+  const t = (seniorScreensCopyByLang[currentLanguage] || seniorScreensCopyByLang.en).asha;
+
   const [glassesReady, setGlassesReady] = useState(true);
   const [hearingAidReady, setHearingAidReady] = useState(true);
   const [quietRoom, setQuietRoom] = useState(true);
@@ -57,17 +59,11 @@ export const AshaCompanionPage: React.FC = () => {
   const [ashaNotes, setAshaNotes] = useState('Patient is alert and oriented today. Slight hesitation with fine motor grip, recommended audio-guided mode.');
   const [savedMessage, setSavedMessage] = useState(false);
 
-  const voiceGuidanceText = currentLanguage === 'ta'
-    ? 'வணக்கம். இது ஆஷா மற்றும் குடும்ப பராமரிப்பாளர் உதவி பக்கம். முதியவர்கள் எளிதாக நினைவாற்றல் பரிசோதனையை செய்ய நாங்கள் உதவுகிறோம்.'
-    : currentLanguage === 'hi'
-    ? 'नमस्ते। यह आशा कार्यकर्ता और परिवार देखभालकर्ता सहायक पृष्ठ है। 60 वर्ष से अधिक उम्र के बुजुर्गों के लिए सहज जांच।'
-    : 'Welcome to the ASHA and Family Caregiver Companion mode. Designed for assisted screening of 60+ seniors in rural and urban clinics.';
-
   const handleSpeak = () => {
     if (isSpeaking) {
       stopSpeaking();
     } else {
-      speak(voiceGuidanceText);
+      speak(t.voiceGuidanceText);
     }
   };
 
@@ -79,9 +75,9 @@ export const AshaCompanionPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <PortalPageHeader
-        eyebrow="National Health Mission · Geriatric Support"
-        title="ASHA & Caregiver Assisted Companion"
-        description="Assisted cognitive screening protocol for seniors (60+) administered by ASHA workers, ANMs, or family delegates."
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
         actions={
           <button
             type="button"
@@ -89,7 +85,7 @@ export const AshaCompanionPage: React.FC = () => {
             className={`${secondaryButton} flex items-center gap-2 border-forest/30 bg-mint/50 text-forest hover:bg-mint`}
           >
             {isSpeaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            {isSpeaking ? 'Stop Voice Guidance' : 'Listen in Vernacular'}
+            {isSpeaking ? t.stopVoice : t.listenVernacular}
           </button>
         }
       />
@@ -105,7 +101,7 @@ export const AshaCompanionPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-slate-900">{user?.name || 'Ramanathan Swaminathan'}</h3>
                 <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
-                  Senior Citizen (Age 68)
+                  {t.seniorCitizen}
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -118,8 +114,8 @@ export const AshaCompanionPage: React.FC = () => {
               to="/patient/assessment/intro"
               className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white shadow hover:bg-emerald-800 transition"
             >
-              <Sparkles className="h-4 w-4" />
-              Start Assisted 5-Min Screening
+              <Activity className="h-4 w-4" />
+              {t.startAssisted}
             </Link>
           </div>
         </div>
@@ -129,8 +125,8 @@ export const AshaCompanionPage: React.FC = () => {
         {/* Sensory Readiness Checklist */}
         <Card padded>
           <SectionTitle
-            title="Pre-Screening Sensory Checklist"
-            detail="Verifies sensory accommodations before launching eye tracking or voice tasks to prevent false negatives."
+            title={t.checklistTitle}
+            detail={t.checklistDetail}
           />
           <div className="space-y-3 mt-4">
             <label className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 hover:bg-slate-50 cursor-pointer transition">
@@ -141,8 +137,8 @@ export const AshaCompanionPage: React.FC = () => {
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
               <div>
-                <p className="text-sm font-semibold text-slate-900">Reading Glasses / Spectacles in Place</p>
-                <p className="text-xs text-slate-500">Crucial for MediaPipe gaze calibration and Diya/Peacock image recognition.</p>
+                <p className="text-sm font-semibold text-slate-900">{t.glassesTitle}</p>
+                <p className="text-xs text-slate-500">{t.glassesDesc}</p>
               </div>
             </label>
 
@@ -154,8 +150,8 @@ export const AshaCompanionPage: React.FC = () => {
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
               <div>
-                <p className="text-sm font-semibold text-slate-900">Hearing Aid Verified (If Applicable)</p>
-                <p className="text-xs text-slate-500">Ensures clear reception of vernacular voice prompts in Tamil, Hindi, or English.</p>
+                <p className="text-sm font-semibold text-slate-900">{t.hearingTitle}</p>
+                <p className="text-xs text-slate-500">{t.hearingDesc}</p>
               </div>
             </label>
 
@@ -167,8 +163,8 @@ export const AshaCompanionPage: React.FC = () => {
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
               <div>
-                <p className="text-sm font-semibold text-slate-900">Low Background Noise (PHC / Home)</p>
-                <p className="text-xs text-slate-500">Prevents acoustic speech jitter distortion during vocal tempo recording.</p>
+                <p className="text-sm font-semibold text-slate-900">{t.quietTitle}</p>
+                <p className="text-xs text-slate-500">{t.quietDesc}</p>
               </div>
             </label>
 
@@ -180,8 +176,8 @@ export const AshaCompanionPage: React.FC = () => {
                 className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
               <div>
-                <p className="text-sm font-semibold text-slate-900">Senior Alertness & Hydration Confirmed</p>
-                <p className="text-xs text-slate-500">Morning screenings yield the most consistent longitudinal comparison.</p>
+                <p className="text-sm font-semibold text-slate-900">{t.alertTitle}</p>
+                <p className="text-xs text-slate-500">{t.alertDesc}</p>
               </div>
             </label>
           </div>
@@ -190,27 +186,27 @@ export const AshaCompanionPage: React.FC = () => {
         {/* ASHA Field Observation Notes */}
         <Card padded>
           <SectionTitle
-            title="ASHA / Caregiver Field Observations"
-            detail="Recorded qualitative observations are appended directly to the doctor's longitudinal dossier."
+            title={t.notesTitle}
+            detail={t.notesDetail}
           />
           <div className="mt-4 space-y-3">
             <textarea
               rows={5}
               value={ashaNotes}
               onChange={(e) => setAshaNotes(e.target.value)}
-              placeholder="Record any confusion, tremor, gait difficulty, or memory concerns mentioned by the senior or family..."
+              placeholder={t.notesPlaceholder}
               className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed"
             />
             <div className="flex items-center justify-between">
               <span className="text-xs text-slate-500 flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Auto-synced with Rural Health Center
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> {t.autoSynced}
               </span>
               <button
                 type="button"
                 onClick={handleSaveNotes}
                 className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow hover:bg-slate-800 transition"
               >
-                {savedMessage ? 'Saved Successfully!' : 'Save Observations'}
+                {savedMessage ? t.savedSuccess : t.saveNotes}
               </button>
             </div>
           </div>
@@ -218,7 +214,7 @@ export const AshaCompanionPage: React.FC = () => {
           <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-xs text-amber-900 leading-relaxed flex gap-2">
             <Info className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
             <span>
-              <strong>Clinical Protocol:</strong> ASHA workers must not prompt answers during the visual memory (Cortex Match) or trail-making task to preserve reliable baseline statistics.
+              <strong>Clinical Protocol:</strong> {t.protocolAlert}
             </span>
           </div>
         </Card>
@@ -232,6 +228,9 @@ export const AshaCompanionPage: React.FC = () => {
 // ============================================================================
 export const AbhaHealthLinkagePage: React.FC = () => {
   const { user } = useAuthStore();
+  const { currentLanguage } = useLanguageStore();
+  const t = (seniorScreensCopyByLang[currentLanguage] || seniorScreensCopyByLang.en).abha;
+
   const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing'>('synced');
 
   const triggerSync = () => {
@@ -242,9 +241,9 @@ export const AbhaHealthLinkagePage: React.FC = () => {
   return (
     <div className="space-y-6">
       <PortalPageHeader
-        eyebrow="Ministry of Health & Family Welfare · Ayushman Bharat Digital Mission"
-        title="Ayushman Bharat (ABHA) & PHC Network"
-        description="Seamlessly links your NeuLens longitudinal cognitive dossier with Government of India Primary Health Centres and PM-JAY Senior Citizen coverage."
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
       />
 
       {/* ABHA Digital Card Mockup */}
@@ -253,19 +252,19 @@ export const AbhaHealthLinkagePage: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="rounded-md bg-orange-600 px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-white">
-                ABHA Card · आयुष्मान भारत
+                {t.govAuthority} · {t.abhaCardTitle}
               </span>
               <span className="rounded-md bg-emerald-700 px-2 py-0.5 text-[11px] font-bold text-white">
-                PM-JAY Senior (₹5 Lakh Cover Active)
+                {t.activeVerified}
               </span>
             </div>
             <div>
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">{user?.name || 'Ramanathan Swaminathan'}</h2>
               <p className="font-mono text-sm font-semibold text-slate-600 mt-0.5">
-                ABHA Number: 91-4402-8821-3091
+                {t.abhaNumLabel}: 91-4402-8821-3091
               </p>
               <p className="text-xs text-slate-500">
-                ABHA Address: <span className="font-medium text-slate-700">ramanathan68@abdm</span> · DOB: 14/05/1958
+                {t.abhaAddrLabel}: <span className="font-medium text-slate-700">ramanathan68@abdm</span> · DOB: 14/05/1958
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-600">
@@ -280,7 +279,7 @@ export const AbhaHealthLinkagePage: React.FC = () => {
 
           <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
             <QrCode className="h-24 w-24 text-slate-800" />
-            <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">Scan at any PHC / AIIMS</p>
+            <p className="mt-1 text-[10px] font-bold uppercase text-slate-400">{t.scanAnyPhc}</p>
           </div>
         </div>
       </div>
@@ -292,12 +291,12 @@ export const AbhaHealthLinkagePage: React.FC = () => {
               <FileCheck2 className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">Consent Token</p>
-              <p className="text-sm font-bold text-slate-900">ABDM-HIU-VERIFIED</p>
+              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">PHC Network</p>
+              <p className="text-sm font-bold text-slate-900">{t.benefit1Title}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Encrypted FHIR R4 clinical exchange allows authorized government neurologists to review change detection trends.
+            {t.benefit1Desc}
           </p>
         </Card>
 
@@ -307,12 +306,12 @@ export const AbhaHealthLinkagePage: React.FC = () => {
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">PM-JAY Senior Care</p>
-              <p className="text-sm font-bold text-slate-900">Active (Policy: TN-2026)</p>
+              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">PM-JAY Scheme</p>
+              <p className="text-sm font-bold text-slate-900">{t.benefit2Title}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Covers comprehensive geriatric cognitive rehabilitation, memory daycare, and neurological imaging at empaneled hospitals.
+            {t.benefit2Desc}
           </p>
         </Card>
 
@@ -322,12 +321,12 @@ export const AbhaHealthLinkagePage: React.FC = () => {
               <HeartPulse className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">Ayushman Mandir Link</p>
-              <p className="text-sm font-bold text-slate-900">Ward 14 (1.8 km away)</p>
+              <p className="text-xs font-bold uppercase text-slate-400 tracking-wider">Family Gateway</p>
+              <p className="text-sm font-bold text-slate-900">{t.benefit3Title}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Primary Health Centre conducts free weekly geriatric blood pressure and diabetes screening every Wednesday.
+            {t.benefit3Desc}
           </p>
         </Card>
       </div>
@@ -336,9 +335,9 @@ export const AbhaHealthLinkagePage: React.FC = () => {
       <Card padded>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h4 className="text-base font-bold text-slate-900">Push Longitudinal Baseline to Ayushman Registry</h4>
+            <h4 className="text-base font-bold text-slate-900">{t.benefitsTitle}</h4>
             <p className="text-xs text-slate-500 mt-0.5">
-              Updates your official national EHR with the latest within-person cognitive change score ($\Delta$ RCI).
+              {t.benefit1Desc}
             </p>
           </div>
           <button
@@ -350,12 +349,12 @@ export const AbhaHealthLinkagePage: React.FC = () => {
             {syncStatus === 'syncing' ? (
               <>
                 <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                Syncing with ABDM Gateway...
+                {t.syncingBtn}
               </>
             ) : (
               <>
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                Sync with National Health Registry
+                {t.syncBtn}
               </>
             )}
           </button>
@@ -369,6 +368,9 @@ export const AbhaHealthLinkagePage: React.FC = () => {
 // 3. GERIATRIC VITALS & POLYPHARMACY TRACKER (Diabetes, BP & Routine)
 // ============================================================================
 export const GeriatricVitalsPage: React.FC = () => {
+  const { currentLanguage } = useLanguageStore();
+  const t = (seniorScreensCopyByLang[currentLanguage] || seniorScreensCopyByLang.en).vitals;
+
   const [systolic, setSystolic] = useState('128');
   const [diastolic, setDiastolic] = useState('82');
   const [fastingSugar, setFastingSugar] = useState('110');
@@ -376,43 +378,42 @@ export const GeriatricVitalsPage: React.FC = () => {
   const [afternoonPillsTaken, setAfternoonPillsTaken] = useState(true);
   const [nightPillsTaken, setNightPillsTaken] = useState(false);
   const [waterGlasses, setWaterGlasses] = useState(5);
-  const [morningWalkDone, setMorningWalkDone] = useState(true);
 
   return (
     <div className="space-y-6">
       <PortalPageHeader
-        eyebrow="Geriatric Care Protocol · Daily Comorbidity Tracking"
-        title="Senior Vitals & Daily Routine Tracker"
-        description="Daily monitoring of blood pressure, blood glucose, and medication adherence. Crucial for distinguishing metabolic fluctuations from neurocognitive changes."
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
       />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Blood Pressure"
+          label={t.bpLabel}
           value={`${systolic} / ${diastolic}`}
-          detail="Normal Geriatric Range (Target: <135/85)"
+          detail={t.bpTarget}
           icon={Heart}
           tone="forestSoft"
         />
         <StatCard
-          label="Fasting Glucose"
+          label={t.sugarLabel}
           value={`${fastingSugar} mg/dL`}
-          detail="Target: 90 - 130 mg/dL"
+          detail={t.sugarTarget}
           icon={Activity}
           tone="forest"
         />
         <StatCard
-          label="Daily Pills"
-          value={`${(morningPillsTaken ? 1 : 0) + (afternoonPillsTaken ? 1 : 0) + (nightPillsTaken ? 1 : 0)} / 3 Doses`}
-          detail="Morning & Afternoon Complete"
+          label={t.medAdherence}
+          value={`${(morningPillsTaken ? 1 : 0) + (afternoonPillsTaken ? 1 : 0) + (nightPillsTaken ? 1 : 0)} / 3`}
+          detail={t.medAdherenceDetail}
           icon={PillIcon}
           tone="mint"
         />
         <StatCard
-          label="Hydration"
-          value={`${waterGlasses} / 8 Glasses`}
-          detail="Adequate Hydration prevents Delirium"
-          icon={Sparkles}
+          label={t.habitsLabel}
+          value={`${waterGlasses} / 8`}
+          detail={t.habitsDetail}
+          icon={Activity}
           tone="amber"
         />
       </div>
@@ -421,8 +422,8 @@ export const GeriatricVitalsPage: React.FC = () => {
         {/* Medication Compliance Schedule */}
         <Card padded>
           <SectionTitle
-            title="Daily Medication Compliance"
-            detail="Designed with high-contrast, large touch targets for older adults."
+            title={t.todaySchedule}
+            detail={t.tapToMark}
           />
           <div className="space-y-3 mt-4">
             <div className={`flex items-center justify-between p-4 rounded-2xl border transition ${morningPillsTaken ? 'border-emerald-200 bg-emerald-50/60' : 'border-slate-200 bg-white'}`}>
@@ -431,8 +432,8 @@ export const GeriatricVitalsPage: React.FC = () => {
                   🌅
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Morning Dose (8:00 AM)</h4>
-                  <p className="text-xs text-slate-500">Metformin 500mg, Telmisartan 40mg, Vitamin B12</p>
+                  <h4 className="text-sm font-bold text-slate-900">{t.morningPill}</h4>
+                  <p className="text-xs text-slate-500">{t.morningPillDetail}</p>
                 </div>
               </div>
               <button
@@ -440,7 +441,7 @@ export const GeriatricVitalsPage: React.FC = () => {
                 onClick={() => setMorningPillsTaken(!morningPillsTaken)}
                 className={`rounded-xl px-4 py-2 text-xs font-bold transition ${morningPillsTaken ? 'bg-emerald-700 text-white shadow' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
               >
-                {morningPillsTaken ? '✓ Taken' : 'Mark Taken'}
+                {morningPillsTaken ? `✓ ${t.taken}` : t.pending}
               </button>
             </div>
 
@@ -450,8 +451,8 @@ export const GeriatricVitalsPage: React.FC = () => {
                   ☀️
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Afternoon Dose (1:30 PM)</h4>
-                  <p className="text-xs text-slate-500">Calcium Citrate + Vitamin D3 1000 IU</p>
+                  <h4 className="text-sm font-bold text-slate-900">{t.afternoonPill}</h4>
+                  <p className="text-xs text-slate-500">{t.afternoonPillDetail}</p>
                 </div>
               </div>
               <button
@@ -459,7 +460,7 @@ export const GeriatricVitalsPage: React.FC = () => {
                 onClick={() => setAfternoonPillsTaken(!afternoonPillsTaken)}
                 className={`rounded-xl px-4 py-2 text-xs font-bold transition ${afternoonPillsTaken ? 'bg-emerald-700 text-white shadow' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
               >
-                {afternoonPillsTaken ? '✓ Taken' : 'Mark Taken'}
+                {afternoonPillsTaken ? `✓ ${t.taken}` : t.pending}
               </button>
             </div>
 
@@ -469,8 +470,8 @@ export const GeriatricVitalsPage: React.FC = () => {
                   🌙
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Night Dose (9:00 PM)</h4>
-                  <p className="text-xs text-slate-500">Atorvastatin 10mg</p>
+                  <h4 className="text-sm font-bold text-slate-900">{t.nightPill}</h4>
+                  <p className="text-xs text-slate-500">{t.nightPillDetail}</p>
                 </div>
               </div>
               <button
@@ -478,7 +479,7 @@ export const GeriatricVitalsPage: React.FC = () => {
                 onClick={() => setNightPillsTaken(!nightPillsTaken)}
                 className={`rounded-xl px-4 py-2 text-xs font-bold transition ${nightPillsTaken ? 'bg-emerald-700 text-white shadow' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
               >
-                {nightPillsTaken ? '✓ Taken' : 'Mark Taken'}
+                {nightPillsTaken ? `✓ ${t.taken}` : t.pending}
               </button>
             </div>
           </div>
@@ -487,13 +488,13 @@ export const GeriatricVitalsPage: React.FC = () => {
         {/* Vitals Log Entry Form */}
         <Card padded>
           <SectionTitle
-            title="Log Today's Measurements"
-            detail="Quick entry by senior or caregiver."
+            title={t.logVitals}
+            detail={t.logVitalsDetail}
           />
           <div className="space-y-4 mt-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Systolic BP (Upper)</label>
+                <label className="block text-xs font-bold uppercase text-slate-500 mb-1">{t.systolicLabel}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -505,7 +506,7 @@ export const GeriatricVitalsPage: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Diastolic BP (Lower)</label>
+                <label className="block text-xs font-bold uppercase text-slate-500 mb-1">{t.diastolicLabel}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -519,7 +520,7 @@ export const GeriatricVitalsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Fasting Blood Sugar</label>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-1">{t.fastingSugarLabel}</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -532,7 +533,7 @@ export const GeriatricVitalsPage: React.FC = () => {
             </div>
 
             <div className="pt-2 flex items-center justify-between">
-              <span className="text-xs text-slate-500">Hydration Glasses:</span>
+              <span className="text-xs text-slate-500">{t.hydrationLabel}:</span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -554,7 +555,7 @@ export const GeriatricVitalsPage: React.FC = () => {
 
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-              <span>Vitals are within stable geriatric limits today. Safe for cognitive screening.</span>
+              <span>{t.vitalsNormal}</span>
             </div>
           </div>
         </Card>
@@ -567,6 +568,9 @@ export const GeriatricVitalsPage: React.FC = () => {
 // 4. EMERGENCY SOS & DEMENTIA WANDER ALERT SCREEN (India Tele-MANAS / 108)
 // ============================================================================
 export const EmergencySosPage: React.FC = () => {
+  const { currentLanguage } = useLanguageStore();
+  const t = (seniorScreensCopyByLang[currentLanguage] || seniorScreensCopyByLang.en).sos;
+
   const [sosSent, setSosSent] = useState(false);
 
   const triggerSos = () => {
@@ -576,9 +580,9 @@ export const EmergencySosPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <PortalPageHeader
-        eyebrow="Emergency Protocols · 24x7 Elder Protection"
-        title="Emergency SOS & Family Alert"
-        description="One-touch immediate alert for acute confusion, disorientation, wandering episodes, or medical emergencies."
+        eyebrow={t.eyebrow}
+        title={t.title}
+        description={t.description}
       />
 
       {/* Primary SOS Action Card */}
@@ -588,9 +592,9 @@ export const EmergencySosPage: React.FC = () => {
             <ShieldAlert className="h-8 w-8" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Need Immediate Assistance?</h3>
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight">{t.sosHeading}</h3>
             <p className="text-sm text-slate-600 mt-1">
-              Pressing the emergency button will send an instant SMS and WhatsApp alert with GPS coordinates to your registered family caregivers and notify the local PHC.
+              {t.sosSubtitle}
             </p>
           </div>
 
@@ -600,12 +604,12 @@ export const EmergencySosPage: React.FC = () => {
             className="w-full sm:w-auto inline-flex items-center justify-center gap-3 rounded-2xl bg-red-600 px-8 py-4 text-base font-black text-white shadow-xl hover:bg-red-700 transition active:scale-95"
           >
             <PhoneCall className="h-5 w-5" />
-            {sosSent ? '✓ SOS Sent to Family & Emergency Services' : 'Trigger Immediate Senior SOS'}
+            {sosSent ? t.sosTriggered : t.sosTriggerBtn}
           </button>
 
           {sosSent && (
             <div className="rounded-xl border border-red-300 bg-red-100/80 px-4 py-2.5 text-xs font-semibold text-red-900 animate-fade-in">
-              Alert dispatched: Son (Karthik Swaminathan: +91 98401 23456) & Thanjavur PHC Ambulance notified.
+              {t.sosDispatched}
             </div>
           )}
         </div>
@@ -619,18 +623,18 @@ export const EmergencySosPage: React.FC = () => {
               <PhoneCall className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">Tele-MANAS Helpline</h4>
-              <p className="text-xs text-purple-700 font-bold">Dial 14416 (Toll-Free)</p>
+              <h4 className="text-sm font-bold text-slate-900">{t.teleManasTitle}</h4>
+              <p className="text-xs text-purple-700 font-bold">{t.teleManasNum}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Government of India's 24x7 National Mental Health helpline offering free psychological support in 20+ Indian languages.
+            {t.teleManasDesc}
           </p>
           <a
             href="tel:14416"
             className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 hover:underline"
           >
-            Call 14416 Now <ArrowRight className="h-3.5 w-3.5" />
+            {t.teleManasCall} <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </Card>
 
@@ -641,18 +645,18 @@ export const EmergencySosPage: React.FC = () => {
               <HeartPulse className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">National Ambulance</h4>
-              <p className="text-xs text-red-700 font-bold">Dial 108 (24x7 Rapid Response)</p>
+              <h4 className="text-sm font-bold text-slate-900">{t.ambulanceTitle}</h4>
+              <p className="text-xs text-red-700 font-bold">{t.ambulanceNum}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Direct dispatch for acute medical emergencies, sudden weakness, stroke symptoms (FAST), or severe falls.
+            {t.ambulanceDesc}
           </p>
           <a
             href="tel:108"
             className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-red-700 hover:underline"
           >
-            Call 108 Now <ArrowRight className="h-3.5 w-3.5" />
+            {t.ambulanceCall} <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </Card>
 
@@ -663,18 +667,18 @@ export const EmergencySosPage: React.FC = () => {
               <Users className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">Registered Caregiver</h4>
-              <p className="text-xs text-blue-700 font-bold">Karthik (Son) · +91 98401 23456</p>
+              <h4 className="text-sm font-bold text-slate-900">{t.caregiverTitle}</h4>
+              <p className="text-xs text-blue-700 font-bold">{t.caregiverNum}</p>
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500 leading-relaxed">
-            Primary family proxy who receives assessment summaries, appointment reminders, and sudden change alerts.
+            {t.caregiverDesc}
           </p>
           <a
             href="tel:+919840123456"
             className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:underline"
           >
-            Call Caregiver <ArrowRight className="h-3.5 w-3.5" />
+            {t.caregiverCall} <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </Card>
       </div>

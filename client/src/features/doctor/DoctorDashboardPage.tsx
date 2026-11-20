@@ -14,6 +14,7 @@ import {
   Filter, 
   Sparkles,
   ShieldAlert,
+  ShieldCheck,
   Stethoscope,
   RefreshCw
 } from 'lucide-react';
@@ -231,7 +232,7 @@ export const DoctorDashboardPage: React.FC = () => {
               {stats?.completedAssessments ?? '—'}
             </div>
             <div className="text-xs text-muted mt-1 flex items-center gap-1 font-medium">
-              <span>Multimodal AI batteries stored</span>
+              <span>Multimodal clinical assessments stored</span>
             </div>
           </div>
         </div>
@@ -333,19 +334,19 @@ export const DoctorDashboardPage: React.FC = () => {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* HOSPITAL AI PROTOCOL BANNER                                      */}
+      {/* HOSPITAL CLINICAL NEUROLOGY PROTOCOL BANNER                     */}
       {/* ---------------------------------------------------------------- */}
       <div className="bg-gradient-to-r from-[#173026] via-[#1a382d] to-[#0f2119] p-6 sm:p-7 rounded-[24px] text-white shadow-elevated flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-forest/30">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-white flex items-center gap-1 border border-white/20">
-              <Sparkles className="w-3 h-3 text-emerald-300" />
-              NeuLens v2.5 Protocol
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-white flex items-center gap-1.5 border border-white/20">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+              NeuLens Clinical Protocol v2.5
             </span>
-            <span className="text-xs text-white/70">Biometric &amp; Speech Pipeline Active</span>
+            <span className="text-xs text-white/70">Biometric &amp; Telehealth Pipeline Active</span>
           </div>
           <h3 className="text-lg font-semibold font-display text-white tracking-[-0.02em]">
-            Hospital Dual-Portal Architecture Active
+            Doctor-Led Clinical Governance &amp; Dual-Portal System
           </h3>
           <p className="text-xs text-white/80 max-w-2xl leading-relaxed">
             Patient portal strictly sanitizes all risk stratifications and diagnostic scores. Doctors retain sole authority to view composite domain scores, review raw eye/voice telemetry, and sign off official reports.
@@ -355,19 +356,19 @@ export const DoctorDashboardPage: React.FC = () => {
         <div className="flex flex-wrap gap-2 text-xs">
           <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Google AI Speech
+            Clinical Speech Telehealth
           </div>
           <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
             <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
-            MediaPipe Gaze &amp; Face
+            Oculomotor &amp; Facial Telemetry
           </div>
           <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
             <span className="w-2 h-2 rounded-full bg-teal-300"></span>
-            Gemini 2.5 Flash Copilot
+            Clinical Decision Support System (CDSS)
           </div>
           <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
             <span className="w-2 h-2 rounded-full bg-mint"></span>
-            Gemini Live Vernacular
+            Multilingual Patient Guidance
           </div>
         </div>
       </div>

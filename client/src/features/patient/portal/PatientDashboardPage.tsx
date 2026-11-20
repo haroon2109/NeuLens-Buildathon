@@ -8,7 +8,8 @@ import {
   Globe,
   HeartPulse,
   PhoneCall,
-  Sparkles,
+  Activity,
+  ShieldCheck,
   Stethoscope,
   Volume2,
   VolumeX
@@ -42,8 +43,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"Patient is active and oriented. Eye tracking and speech tempo are well preserved. Recommended to continue routine morning walks and memory activities."',
     docSign: 'Dr. Priya Sundaram (PHC Medical Officer) · 18 Nov 2026',
     startCheckin: 'Start 5-Minute Check-in',
-    stimuliLabel: 'Cultural Stimuli',
-    stimuliValues: 'Diya 🪔 · Peacock 🦚 · Lotus 🪷',
+    protocolNote: 'PHC Certified Clinical Protocol · ICMR Guidelines',
     healthIndex: 'Health Index',
     healthyRange: 'Healthy Geriatric Range',
     lastChecked: 'Last checked: 18 Nov 2026',
@@ -96,8 +96,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"நோயாளி சுறுசுறுப்பாகவும் விழிப்புடனும் உள்ளார். கண் பார்வை மற்றும் பேச்சு வேகம் சீராக உள்ளது. காலை நடைப்பயிற்சியை தொடர்ந்து மேற்கொள்ளவும்."',
     docSign: 'டாக்டர் பிரியா சுந்தரம் (ஆரம்ப சுகாதார நிலைய மருத்துவர்) · 18 நவம்பர் 2026',
     startCheckin: '5 நிமிட பரிசோதனையைத் தொடங்கு',
-    stimuliLabel: 'பாரம்பரிய அடையாளங்கள்',
-    stimuliValues: 'அகல் விளக்கு 🪔 · மயில் 🦚 · தாமரை 🪷',
+    protocolNote: 'அரசு ஆரம்ப சுகாதார நிலைய அங்கீகரிக்கப்பட்ட நரம்பியல் பரிசோதனை முறை',
     healthIndex: 'நலக் குறியீடு',
     healthyRange: 'இயல்பான நல நிலை',
     lastChecked: 'கடைசி ஆய்வு: 18 நவம்பர் 2026',
@@ -150,8 +149,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"मरीज सक्रिय और सतर्क हैं। आँखों की गति और बोलने की गति पूरी तरह स्थिर है। नियमित सुबह की सैर और याददाश्त अभ्यास जारी रखें।"',
     docSign: 'डॉ. प्रिया सुंदरम (पीएचसी चिकित्सा अधिकारी) · 18 नवंबर 2026',
     startCheckin: '5 मिनट की जांच शुरू करें',
-    stimuliLabel: 'सांस्कृतिक प्रतीक',
-    stimuliValues: 'दीया 🪔 · मोर 🦚 · कमल 🪷',
+    protocolNote: 'प्राथमिक स्वास्थ्य केंद्र प्रमाणित न्यूरोलॉजिकल जांच प्रोटोकॉल',
     healthIndex: 'स्वास्थ्य सूचकांक',
     healthyRange: 'स्वस्थ सामान्य स्थिति',
     lastChecked: 'पिछली जांच: 18 नवंबर 2026',
@@ -204,8 +202,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"రోగి చురుకుగా మరియు అప్రమత్తంగా ఉన్నారు. కంటి కదలిక మరియు మాట్లాడే వేగం స్థిరంగా ఉన్నాయి. రోజువారీ ఉదయం నడకను కొనసాగించండి."',
     docSign: 'డా. ప్రియ సుందరం (పీహెచ్‌సీ మెడికల్ ఆఫీసర్) · 18 నవంబర్ 2026',
     startCheckin: '5 నిమిషాల పరీక్ష ప్రారంభించండి',
-    stimuliLabel: 'సాంస్కృతిక గుర్తులు',
-    stimuliValues: 'ప్రమిద 🪔 · నెమలి 🦚 · తామర 🪷',
+    protocolNote: 'ప్రాథమిక ఆరోగ్య కేంద్ర ప్రామాణిక న్యూరాలజీ ప్రోటోకాల్',
     healthIndex: 'ఆరోగ్య సూచిక',
     healthyRange: 'సాధారణ ఆరోగ్య పరిధి',
     lastChecked: 'చివరి పరీక్ష: 18 నవంబర్ 2026',
@@ -258,8 +255,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"രോഗി ഉന്മേഷവാനും ജാഗരൂകനുമാണ്. കണ്ണിന്റെ ചലനങ്ങളും സംസാര രീതിയും സ്ഥിരതയുള്ളതാണ്. രാവിലെയുള്ള നടത്തം തുടരുക."',
     docSign: 'ഡോ. പ്രിയ സുന്ദരം (പിഎച്ച്‌സി മെഡിക്കൽ ഓഫീസർ) · 18 നവംബർ 2026',
     startCheckin: '5 മിനിറ്റ് പരിശോധന ആരംഭിക്കുക',
-    stimuliLabel: 'പരമ്പരാഗത ചിഹ്നങ്ങൾ',
-    stimuliValues: 'വിളക്ക് 🪔 · മയിൽ 🦚 · താമര 🪷',
+    protocolNote: 'പ്രാഥമിക ആരോഗ്യ കേന്ദ്രം അംഗീകരിച്ച ന്യൂറോളജിക്കൽ പ്രോട്ടോക്കോൾ',
     healthIndex: 'ആരോഗ്യ സൂചിക',
     healthyRange: 'സാധാരണ ആരോഗ്യ പരിധി',
     lastChecked: 'അവസാനം പരിശോധിച്ചത്: 18 നവംബർ 2026',
@@ -312,8 +308,7 @@ const dashboardCopyByLang: Record<string, any> = {
       '"ರೋಗಿಯು ಚಟುವಟಿಕೆಯಿಂದ ಮತ್ತು ಜಾಗರೂಕರಾಗಿದ್ದಾರೆ. ಕಣ್ಣಿನ ಚಲನೆ ಮತ್ತು ಮಾತನಾಡುವ ವೇಗವು ಸ್ಥಿರವಾಗಿದೆ. ಪ್ರತಿದಿನ ಮುಂಜಾನೆಯ ನಡಿಗೆಯನ್ನು ಮುಂದುವರಿಸಿ."',
     docSign: 'ಡಾ. ಪ್ರಿಯಾ ಸುಂದರಂ (ಪಿಎಚ್‌ಸಿ ವೈದ್ಯಾಧಿಕಾರಿ) · 18 ನವೆಂಬರ್ 2026',
     startCheckin: '5 ನಿಮಿಷಗಳ ಪರೀಕ್ಷೆ ಪ್ರಾರಂಭಿಸಿ',
-    stimuliLabel: 'ಸಾಂಸ್ಕೃತಿಕ ಚಿಹ್ನೆಗಳು',
-    stimuliValues: 'ದೀಪ 🪔 · ನವಿಲು 🦚 · ಕಮಲ 🪷',
+    protocolNote: 'ಪ್ರಾಥಮಿಕ ಆರೋಗ್ಯ ಕೇಂದ್ರ ಅನುಮೋದಿತ ನರಶಾಸ್ತ್ರ ಪ್ರೋಟೋಕಾಲ್',
     healthIndex: 'ಆರೋಗ್ಯ ಸೂಚ್ಯಂಕ',
     healthyRange: 'ಸಾಮಾನ್ಯ ಆರೋಗ್ಯ ಶ್ರೇಣಿ',
     lastChecked: 'ಕೊನೆಯ ಪರಿಶೀಲನೆ: 18 ನವೆಂಬರ್ 2026',
@@ -476,22 +471,20 @@ export const PatientDashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* PRIMARY SCREENING BUTTON */}
+              {/* PRIMARY CLINICAL SCREENING BUTTON */}
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
                   to="/patient/assessment/intro"
                   className="inline-flex items-center justify-center gap-3 rounded-full bg-emerald-700 px-8 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-800 transition active:scale-95"
                 >
-                  <Sparkles className="h-5 w-5" />
+                  <Activity className="h-5 w-5" />
                   <span>{t.startCheckin}</span>
                   <ArrowRight className="h-5 w-5" />
                 </Link>
 
-                <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                  <span>{t.stimuliLabel}:</span>
-                  <span className="rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-900">
-                    {t.stimuliValues}
-                  </span>
+                <div className="text-xs text-slate-600 flex items-center gap-1.5 font-medium">
+                  <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0" />
+                  <span>{t.protocolNote}</span>
                 </div>
               </div>
             </div>

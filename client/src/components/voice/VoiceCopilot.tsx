@@ -178,7 +178,7 @@ export const VoiceCopilot: React.FC = () => {
         >
           <header className="flex items-start gap-2 border-b border-line bg-mint px-4 py-3">
             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-forest text-white">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              <Volume2 className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[14px] font-bold text-ink">{copy.panelTitle}</p>

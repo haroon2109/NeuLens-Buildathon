@@ -1,6 +1,13 @@
 import type { SupportedLanguage } from './types';
 import { enPortalPages } from './portalPagesCopy.en';
 import { arPortalPages } from './portalPagesCopy.ar';
+import {
+  taPortalPages,
+  hiPortalPages,
+  tePortalPages,
+  mlPortalPages,
+  knPortalPages,
+} from './portalPagesCopy.indic';
 
 export interface PortalPagesCopy {
   common: {
@@ -657,5 +664,12 @@ export interface PortalPagesCopy {
   };
 }
 
-export const getPortalPagesCopy = (language: SupportedLanguage): PortalPagesCopy =>
-  language === 'ar' ? arPortalPages : enPortalPages;
+export const getPortalPagesCopy = (language: SupportedLanguage): PortalPagesCopy => {
+  if (language === 'ar') return arPortalPages;
+  if (language === 'ta') return taPortalPages;
+  if (language === 'hi') return hiPortalPages;
+  if (language === 'te') return tePortalPages;
+  if (language === 'ml') return mlPortalPages;
+  if (language === 'kn') return knPortalPages;
+  return enPortalPages;
+};
