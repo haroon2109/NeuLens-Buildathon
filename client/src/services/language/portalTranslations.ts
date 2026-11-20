@@ -80,6 +80,7 @@ const en: PortalTranslation = {
   nav: {
     groups: {
       Home: 'Home',
+      'Senior Care': 'Senior Care',
       Assessment: 'Assessment',
       Monitoring: 'Monitoring',
       'Health context': 'Health context',
@@ -90,6 +91,10 @@ const en: PortalTranslation = {
       '/patient/dashboard': 'Dashboard',
       '/patient/brain-health': 'Brain health',
       '/patient/timeline': 'Brain Health Timeline',
+      '/patient/asha-companion': 'ASHA & Caregiver Mode',
+      '/patient/abha-health': 'Ayushman Bharat (ABHA)',
+      '/patient/geriatric-vitals': 'Senior Vitals & Meds',
+      '/patient/emergency-sos': 'Emergency SOS (14416 / 108)',
       '/patient/assessment/intro': 'Start assessment',
       '/patient/cognitive': 'Cognitive assessment',
       '/patient/cognitive/library': 'Task library',
@@ -362,11 +367,155 @@ const ar: PortalTranslation = {
   }
 };
 
+const ta: PortalTranslation = {
+  ...en,
+  portalName: 'நோயாளி தளம்',
+  patientPortal: 'நோயாளி தளம்',
+  signOut: 'வெளியேறு',
+  skipToContent: 'உள்ளடக்கத்திற்கு செல்',
+  notifications: 'அறிவிப்புகள்',
+  notificationsUnread: 'படிக்காதவை',
+  footerLine1: 'நரம்பியல் & மூளை நலம்',
+  footerLine2: 'ஸ்கிரீனிங் உதவி மட்டுமே, மருத்துவ நோய் கண்டறிதல் அல்ல.',
+  nav: {
+    groups: {
+      Home: 'முகப்பு',
+      'Senior Care': 'முதியோர் நலம்',
+      Assessment: 'பரிசோதனை',
+      Monitoring: 'கண்காணிப்பு',
+      'Health context': 'உடல்நல விவரம்',
+      Care: 'பராமரிப்பு',
+      Account: 'கணக்கு'
+    },
+    items: {
+      '/patient/dashboard': 'முகப்பு பலகை',
+      '/patient/brain-health': 'மூளை நலம்',
+      '/patient/timeline': 'நல காலக்கோடு',
+      '/patient/asha-companion': 'ஆஷா & பராமரிப்பாளர்',
+      '/patient/abha-health': 'ஆயுஷ்மான் பாரத் (ABHA)',
+      '/patient/geriatric-vitals': 'மாத்திரைகள் & பிபி',
+      '/patient/emergency-sos': 'அவசர உதவி (14416 / 108)',
+      '/patient/assessment/intro': 'பரிசோதனையைத் தொடங்கு',
+      '/patient/cognitive': 'அறிவாற்றல் ஆய்வு',
+      '/patient/cognitive/library': 'பயிற்சி நூலகம்',
+      '/patient/history': 'வரலாறு',
+      '/patient/daily-function': 'தினசரி வினாடி வினா',
+      '/patient/documents': 'அறிக்கைகள் & ஆவணங்கள்',
+      '/patient/trends': 'நீண்டகால போக்குகள்',
+      '/patient/change-detection': 'மாற்றங்கள் கண்டறிதல்',
+      '/patient/health-profile': 'உடல்நல சுயவிவரம்',
+      '/patient/context': 'விவரங்கள் கண்ணோட்டம்',
+      '/patient/context/assessment-conditions': 'பரிசோதனை சூழல்',
+      '/patient/context/sleep': 'தூக்கம் & வாழ்க்கை முறை',
+      '/patient/context/wellbeing': 'மன நலம்',
+      '/patient/context/clinical': 'மருத்துவ & குடும்ப வரலாறு',
+      '/patient/prevention-plan': 'தடுப்பு திட்டம்',
+      '/patient/appointments': 'மருத்துவ சந்திப்புகள்',
+      '/patient/care-plan': 'பராமரிப்பு திட்டம்',
+      '/patient/notifications': 'அறிவிப்புகள்',
+      '/patient/profile': 'சுயவிவரம்',
+      '/patient/settings': 'அமைப்புகள்',
+      '/patient/privacy': 'தனியுரிமை & தரவு',
+      '/patient/help': 'உதவி'
+    }
+  },
+  shell: {
+    ...en.shell,
+    navLabel: 'முதன்மை வழிசெலுத்தல்',
+    closeNav: 'வழிசெலுத்தலை மூடு',
+    openNav: 'வழிசெலுத்தலைத் திற',
+    patientFallback: 'நோயாளி',
+    careTeam: 'பராமரிப்புக் குழு',
+    toBeConfirmed: 'உறுதிப்படுத்தப்பட வேண்டும்',
+    logoutDescription: 'உங்கள் அமர்வை முடிக்க விரும்புகிறீர்களா?',
+    logoutConfirm: 'வெளியேறு',
+    logoutCancel: 'ரத்து செய்',
+    status: {
+      inProgress: 'நடைபெறுகிறது',
+      reviewed: 'மதிப்பாய்வு செய்யப்பட்டது',
+      followUpSuggested: 'மருத்துவர் ஆலோசனை பரிந்துரைக்கப்படுகிறது',
+      awaitingReview: 'மதிப்பாய்வுக்காக காத்திருக்கிறது'
+    }
+  }
+};
+
+const hi: PortalTranslation = {
+  ...en,
+  portalName: 'रोगी पोर्टल',
+  patientPortal: 'रोगी पोर्टल',
+  signOut: 'लॉग आउट',
+  skipToContent: 'सामग्री पर जाएं',
+  notifications: 'सूचनाएं',
+  notificationsUnread: 'अपठित',
+  footerLine1: 'न्यूरोलॉजी और मस्तिष्क स्वास्थ्य',
+  footerLine2: 'केवल स्क्रीनिंग सहायता, कोई अंतिम निदान नहीं।',
+  nav: {
+    groups: {
+      Home: 'होम',
+      'Senior Care': 'वरिष्ठ देखभाल',
+      Assessment: 'मूल्यांकन',
+      Monitoring: 'निगरानी',
+      'Health context': 'स्वास्थ्य संदर्भ',
+      Care: 'देखभाल',
+      Account: 'खाता'
+    },
+    items: {
+      '/patient/dashboard': 'डैशबोर्ड',
+      '/patient/brain-health': 'मस्तिष्क स्वास्थ्य',
+      '/patient/timeline': 'स्वास्थ्य टाइमलाइन',
+      '/patient/asha-companion': 'आशा व देखभालकर्ता',
+      '/patient/abha-health': 'आयुष्मान भारत (ABHA)',
+      '/patient/geriatric-vitals': 'दवाएं और वाइटल्स',
+      '/patient/emergency-sos': 'आपातकालीन मदद (14416 / 108)',
+      '/patient/assessment/intro': 'मूल्यांकन शुरू करें',
+      '/patient/cognitive': 'संज्ञानात्मक जांच',
+      '/patient/cognitive/library': 'टास्क लाइब्रेरी',
+      '/patient/history': 'इतिहास',
+      '/patient/daily-function': 'दैनिक कार्य प्रश्नावली',
+      '/patient/documents': 'रिपोर्ट व दस्तावेज',
+      '/patient/trends': 'दीर्घकालिक रुझान',
+      '/patient/change-detection': 'बदलाव की पहचान',
+      '/patient/health-profile': 'स्वास्थ्य प्रोफ़ाइल',
+      '/patient/context': 'संदर्भ अवलोकन',
+      '/patient/context/assessment-conditions': 'जांच की स्थिति',
+      '/patient/context/sleep': 'नींद व जीवनशैली',
+      '/patient/context/wellbeing': 'मानसिक स्वास्थ्य',
+      '/patient/context/clinical': 'चिकित्सीय इतिहास',
+      '/patient/prevention-plan': 'रोकथाम योजना',
+      '/patient/appointments': 'अपॉइंटमेंट्स',
+      '/patient/care-plan': 'मेरी देखभाल योजना',
+      '/patient/notifications': 'सूचनाएं',
+      '/patient/profile': 'मेरी प्रोफ़ाइल',
+      '/patient/settings': 'खाता सेटिंग्स',
+      '/patient/privacy': 'गोपनीयता व डेटा',
+      '/patient/help': 'सहायता'
+    }
+  },
+  shell: {
+    ...en.shell,
+    navLabel: 'मुख्य नेविगेशन',
+    closeNav: 'नेविगेशन बंद करें',
+    openNav: 'नेविगेशन खोलें',
+    patientFallback: 'रोगी',
+    careTeam: 'देखभाल टीम',
+    toBeConfirmed: 'पुष्टि की जानी बाकी',
+    logoutDescription: 'क्या आप लॉग आउट करना चाहते हैं?',
+    logoutConfirm: 'लॉग आउट',
+    logoutCancel: 'रद्द करें',
+    status: {
+      inProgress: 'प्रगति पर है',
+      reviewed: 'समीक्षा पूरी हुई',
+      followUpSuggested: 'फॉलो-अप का सुझाव',
+      awaitingReview: 'समीक्षा की प्रतीक्षा है'
+    }
+  }
+};
+
 const translations: Record<SupportedLanguage, PortalTranslation> = {
   en,
   ar,
-  ta: en,
-  hi: en,
+  ta,
+  hi,
   te: en,
   ml: en,
   kn: en

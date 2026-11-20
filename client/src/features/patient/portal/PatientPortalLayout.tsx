@@ -59,7 +59,7 @@ const navGroups: NavGroup[] = [
     ]
   },
   {
-    label: 'Senior Care (60+ India)',
+    label: 'Senior Care',
     items: [
       { path: '/patient/asha-companion', label: 'ASHA & Caregiver Mode', icon: Users },
       { path: '/patient/abha-health', label: 'Ayushman Bharat (ABHA)', icon: ShieldCheck },
