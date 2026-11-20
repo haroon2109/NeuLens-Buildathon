@@ -193,7 +193,21 @@ export { ar as arLandingCopy } from './landingCopy.ar';
 
 import { en } from './landingCopy.en';
 import { ar } from './landingCopy.ar';
+import {
+  taLandingCopy,
+  hiLandingCopy,
+  teLandingCopy,
+  mlLandingCopy,
+  knLandingCopy,
+} from './landingCopy.indic';
 
 /** Returns the landing-page copy for a language, falling back to English. */
-export const getLandingCopy = (language: SupportedLanguage): LandingCopy =>
-  language === 'ar' ? ar : en;
+export const getLandingCopy = (language: SupportedLanguage): LandingCopy => {
+  if (language === 'ar') return ar;
+  if (language === 'ta') return taLandingCopy;
+  if (language === 'hi') return hiLandingCopy;
+  if (language === 'te') return teLandingCopy;
+  if (language === 'ml') return mlLandingCopy;
+  if (language === 'kn') return knLandingCopy;
+  return en;
+};
