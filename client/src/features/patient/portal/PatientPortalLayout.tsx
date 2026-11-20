@@ -59,6 +59,15 @@ const navGroups: NavGroup[] = [
     ]
   },
   {
+    label: 'Senior Care (60+ India)',
+    items: [
+      { path: '/patient/asha-companion', label: 'ASHA & Caregiver Mode', icon: Users },
+      { path: '/patient/abha-health', label: 'Ayushman Bharat (ABHA)', icon: ShieldCheck },
+      { path: '/patient/geriatric-vitals', label: 'Senior Vitals & Meds', icon: HeartPulse },
+      { path: '/patient/emergency-sos', label: 'Emergency SOS (14416 / 108)', icon: Bell }
+    ]
+  },
+  {
     label: 'Assessment',
     items: [
       { path: '/patient/assessment/intro', label: 'Start assessment', icon: Sparkles },

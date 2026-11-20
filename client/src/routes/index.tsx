@@ -69,6 +69,12 @@ const DailyFunctionQuestionnairePage = lazyPage(() => import('../features/patien
 const BrainHealthTimelinePage = lazyPage(() => import('../features/patient/portal/PatientRequestedScreens'), 'BrainHealthTimelinePage');
 const PersonalizedPreventionPlanPage = lazyPage(() => import('../features/patient/portal/PatientRequestedScreens'), 'PersonalizedPreventionPlanPage');
 
+// India 60+ Geriatric & ASHA Companion Screens
+const AshaCompanionPage = lazyPage(() => import('../features/patient/portal/PatientSeniorScreens'), 'AshaCompanionPage');
+const AbhaHealthLinkagePage = lazyPage(() => import('../features/patient/portal/PatientSeniorScreens'), 'AbhaHealthLinkagePage');
+const GeriatricVitalsPage = lazyPage(() => import('../features/patient/portal/PatientSeniorScreens'), 'GeriatricVitalsPage');
+const EmergencySosPage = lazyPage(() => import('../features/patient/portal/PatientSeniorScreens'), 'EmergencySosPage');
+
 const HealthContextOverviewPage = lazyPage(() => import('../features/patient/portal/PatientContextPages'), 'HealthContextOverviewPage');
 const SleepLifestylePage = lazyPage(() => import('../features/patient/portal/PatientContextPages'), 'SleepLifestylePage');
 const MentalWellbeingPage = lazyPage(() => import('../features/patient/portal/PatientContextPages'), 'MentalWellbeingPage');
@@ -302,6 +308,12 @@ export const router = createBrowserRouter([
           { path: 'daily-function', element: <DailyFunctionQuestionnairePage /> },
           { path: 'health-profile', element: <PatientHealthProfilePage /> },
           { path: 'prevention-plan', element: <PersonalizedPreventionPlanPage /> },
+
+          // India 60+ Geriatric & ASHA Companion Routes
+          { path: 'asha-companion', element: <AshaCompanionPage /> },
+          { path: 'abha-health', element: <AbhaHealthLinkagePage /> },
+          { path: 'geriatric-vitals', element: <GeriatricVitalsPage /> },
+          { path: 'emergency-sos', element: <EmergencySosPage /> },
 
           { path: 'context', element: <HealthContextOverviewPage /> },
           { path: 'context/sleep', element: <SleepLifestylePage /> },
