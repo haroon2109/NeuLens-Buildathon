@@ -228,7 +228,7 @@ export class GnaniVoiceApiClient {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'audio/wav, audio/*;q=0.9'
+          Accept: 'audio/mpeg, audio/wav, audio/*;q=0.9'
         },
         body: JSON.stringify({
           text,

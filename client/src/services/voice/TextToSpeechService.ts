@@ -22,6 +22,7 @@ class GnaniTTSService implements ITextToSpeechService {
 
   // Session ID to cancel stale or in-flight requests and prevent overlapping speech
   private activeSessionId: number = 0;
+  private audioBlobCache: Map<string, Blob> = new Map();
 
   // General state
   private volume: number = 1.0;
@@ -149,13 +150,22 @@ class GnaniTTSService implements ITextToSpeechService {
     this.isSynthesizing = true;
 
     try {
-      const audioBlob = await gnaniVoiceApi.synthesizeSpeech(
-        text,
-        lang,
-        options.voice,
-        options.rate || 0.95,
-        controller.signal
-      );
+      const cacheKey = `${lang}:${options.voice || 'default'}:${(options.rate || 0.95).toFixed(2)}:${text.trim()}`;
+      let audioBlob: Blob | null = this.audioBlobCache.get(cacheKey) || null;
+
+      if (!audioBlob) {
+        audioBlob = await gnaniVoiceApi.synthesizeSpeech(
+          text,
+          lang,
+          options.voice,
+          options.rate || 0.95,
+          controller.signal
+        );
+
+        if (audioBlob && audioBlob.size > 0) {
+          this.audioBlobCache.set(cacheKey, audioBlob);
+        }
+      }
 
       // If a newer speak() call or stop() was issued while fetching, drop this audio immediately
       if (sessionId !== this.activeSessionId || controller.signal.aborted) {

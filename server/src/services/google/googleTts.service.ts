@@ -166,7 +166,7 @@ export class GoogleTtsService {
   /**
    * Generates a 0.5-second silent/low-frequency WAV tone buffer for offline mock resilience.
    */
-  private generateOfflineWavBuffer(): Buffer {
+  public generateOfflineWavBuffer(): Buffer {
     const sampleRate = 16000;
     const numSamples = Math.floor(sampleRate * 0.4);
     const buffer = Buffer.alloc(44 + numSamples * 2);
