@@ -22,10 +22,10 @@ import { useVoiceAssistantStore } from '../../../services/voice/VoiceInstruction
 import type { SupportedLanguage } from '../../../services/language/types';
 
 // ============================================================================
-// DYNAMIC DASHBOARD STRINGS (English, Tamil, Hindi)
-// Pure translation per language without hardcoding mixed scripts
+// DYNAMIC DASHBOARD STRINGS FOR ALL 6 INDIC & ENGLISH LANGUAGES
+// English, Tamil (ta), Hindi (hi), Telugu (te), Malayalam (ml), Kannada (kn)
 // ============================================================================
-const dashboardCopyByLang = {
+const dashboardCopyByLang: Record<string, any> = {
   en: {
     comfortEyebrow: 'Senior Citizen Care',
     comfortSubtitle: 'Large buttons, clear voice guidance, zero clinical jargon.',
@@ -187,6 +187,168 @@ const dashboardCopyByLang = {
     appointmentsBtn: 'अपॉइंटमेंट्स',
     spokenText: (name: string) =>
       `नमस्ते ${name} जी। आपका स्वास्थ्य और याददाश्त बिल्कुल सामान्य और अच्छी है। चिंता की कोई बात नहीं। 5 मिनट की त्वरित मस्तिष्क जांच के लिए हरे बटन को दबाएं।`
+  },
+  te: {
+    comfortEyebrow: 'సీనియర్ సిటిజన్ సంరక్షణ',
+    comfortSubtitle: 'పెద్ద బటన్లు, స్పష్టమైన వాయిస్ మార్గదర్శకత్వం, ఎలాంటి కఠినమైన పదాలు లేవు.',
+    listenBtn: 'వాయిస్ వినండి',
+    stopVoiceBtn: 'వాయిస్ ఆపండి',
+    statusPill: 'అంతా సాధారణం & ఆరోగ్యంగా ఉంది',
+    abhaPill: 'ఆయుష్మాన్ భారత్ అనుసంధానించబడింది',
+    greeting: (name: string, isMorning: boolean) =>
+      isMorning ? `శుభోదయం, ${name} గారు` : `నమస్కారం, ${name} గారు`,
+    summary:
+      'మీ మెదడు ఆరోగ్యం, జ్ఞాపకశక్తి మరియు ప్రతిస్పందనలు పూర్తిగా సాధారణంగా మరియు ఆరోగ్యంగా ఉన్నాయి. ఎలాంటి ఆందోళన అవసరం లేదు.',
+    docNoteTitle: 'వైద్యుల క్లినికల్ గమనిక',
+    docNoteBody:
+      '"రోగి చురుకుగా మరియు అప్రమత్తంగా ఉన్నారు. కంటి కదలిక మరియు మాట్లాడే వేగం స్థిరంగా ఉన్నాయి. రోజువారీ ఉదయం నడకను కొనసాగించండి."',
+    docSign: 'డా. ప్రియ సుందరం (పీహెచ్‌సీ మెడికల్ ఆఫీసర్) · 18 నవంబర్ 2026',
+    startCheckin: '5 నిమిషాల పరీక్ష ప్రారంభించండి',
+    stimuliLabel: 'సాంస్కృతిక గుర్తులు',
+    stimuliValues: 'ప్రమిద 🪔 · నెమలి 🦚 · తామర 🪷',
+    healthIndex: 'ఆరోగ్య సూచిక',
+    healthyRange: 'సాధారణ ఆరోగ్య పరిధి',
+    lastChecked: 'చివరి పరీక్ష: 18 నవంబర్ 2026',
+    screensTitle: 'ముఖ్యమైన సంరక్షణ పేజీలు',
+    screensSubtitle: 'మీరు మరియు మీ కుటుంబానికి అవసరమైన 4 ముఖ్య పేజీలు. కింద నొక్కండి.',
+    cardAshaTag: 'ఆశా & కుటుంబ సహాయం',
+    cardAshaTitle: 'ఆశా & సంరక్షకుల సహాయక మోడ్',
+    cardAshaDesc: 'సహాయక స్క్రీనింగ్. కళ్లద్దాలు, వినికిడి పరికరం మరియు సంరక్షకుల గమనికలను తనిఖీ చేయండి.',
+    cardAshaBtn: 'ఆశా సహాయాన్ని తెరవండి',
+    cardAbhaTag: 'ప్రభుత్వ పీఎం-జే కవరేజ్',
+    cardAbhaTitle: 'ఆయుష్మాన్ భారత్ (ABHA) కార్డ్',
+    cardAbhaDesc: '14 అంకెల ABHA ఐడీ, ₹5 లక్షల సీనియర్ ఆరోగ్య కవరేజ్ మరియు స్థానిక ప్రాథమిక ఆరోగ్య కేంద్రం.',
+    cardAbhaBtn: 'ఆరోగ్య కార్డు చూడండి',
+    cardVitalsTag: 'రక్తపోటు: 128/82 mmHg',
+    cardVitalsTitle: 'రోజువారీ మందులు & రక్తపోటు',
+    cardVitalsDesc: 'ఉదయం, మధ్యాహ్నం, రాత్రి మందుల మోతాదులను పెద్ద బటన్లతో సులభంగా గుర్తించండి.',
+    cardVitalsBtn: 'మందుల జాబితా తెరవండి',
+    cardEmergencyTag: 'డయల్ 14416 / 108',
+    cardEmergencyTitle: 'అత్యవసర 1-ట్యాప్ ఎస్ఓఎస్ అలర్ట్',
+    cardEmergencyDesc: 'జీపీఎస్ స్థానంతో కుటుంబ సభ్యులు, ప్రభుత్వ అంబులెన్స్ (108) మరియు 14416కు తక్షణ అలర్ట్.',
+    cardEmergencyBtn: 'అత్యవసర నంబర్లు చూడండి',
+    habitsTitle: 'నేటి సాధారణ ఆరోగ్యపు అలవాట్లు',
+    habitsSubtitle: 'పూర్తయిన తర్వాత నొక్కండి. మంచి అలవాట్లు జ్ఞాపకశక్తిని చురుగ్గా ఉంచుతాయి.',
+    habitWalkTitle: '15 నిమిಷాల ఉదయపు నడక',
+    habitWalkDesc: 'రక్త ప్రసరణ మెదడును చురుగ్గా ఉంచుతుంది.',
+    habitMedsTitle: 'ఉదయపు రక్తపోటు మాత్ర',
+    habitMedsDesc: 'అల్పాహారం తర్వాత తీసుకున్నారు (Telmisartan 40mg).',
+    habitWaterTitle: 'తగినంత నీరు త్రాగడం',
+    habitWaterDesc: 'తగినంత నీరు అలసటను తగ్గిస్తుంది.',
+    phcTitle: 'ప్రాథమిక ఆరోగ్య కేంద్రం',
+    caregiverPhone: 'సంరక్షకుడు: కార్తీక్ (కుమారుడు: +91 98401 23456)',
+    callSonBtn: 'కుమారుడికి కాల్ చేయండి',
+    appointmentsBtn: 'అపాయింట్‌మెంట్లు',
+    spokenText: (name: string) =>
+      `నమస్కారం ${name} గారు. మీ మెదడు ఆరోగ్యం మరియు జ్ఞాపకశక్తి పూర్తిగా స్థిరంగా ఉన్నాయి. ఎలాంటి ఆందోళన అవసరం లేదు. 5 నిమిషాల పరీక్ష కోసం ఆకుపచ్చ బటన్‌ను నొక్కండి.`
+  },
+  ml: {
+    comfortEyebrow: 'മുതിർന്നവരുടെ പരിചരണം',
+    comfortSubtitle: 'വലിയ ബട്ടണുകൾ, വ്യക്തമായ ശബ്ദ നിർദ്ദേശങ്ങൾ, സങ്കീർണ്ണമായ പദങ്ങളില്ല.',
+    listenBtn: 'ശബ്ദത്തിൽ കേൾക്കുക',
+    stopVoiceBtn: 'ശബ്ദം നിർത്തുക',
+    statusPill: 'എല്ലാം സാധാരണവും സുരക്ഷിതവുമാണ്',
+    abhaPill: 'ആയുഷ്മാൻ ഭാരത് ബന്ധിപ്പിച്ചു',
+    greeting: (name: string, isMorning: boolean) =>
+      isMorning ? `സുപ്രഭാതം, ${name}` : `നമസ്കാരം, ${name}`,
+    summary:
+      'നിങ്ങളുടെ തലച്ചോറിന്റെ ആരോഗ്യം, ഓർമ്മശക്തി, ചലനങ്ങൾ എന്നിവ തികച്ചും സാധാരണവും ആരോഗ്യകരവുമാണ്. ആശങ്കപ്പെടേണ്ടതില്ല.',
+    docNoteTitle: 'ഡോക്ടറുടെ കുറിപ്പ്',
+    docNoteBody:
+      '"രോഗി ഉന്മേഷവാനും ജാഗരൂകനുമാണ്. കണ്ണിന്റെ ചലനങ്ങളും സംസാര രീതിയും സ്ഥിരതയുള്ളതാണ്. രാവിലെയുള്ള നടത്തം തുടരുക."',
+    docSign: 'ഡോ. പ്രിയ സുന്ദരം (പിഎച്ച്‌സി മെഡിക്കൽ ഓഫീസർ) · 18 നവംബർ 2026',
+    startCheckin: '5 മിനിറ്റ് പരിശോധന ആരംഭിക്കുക',
+    stimuliLabel: 'പരമ്പരാഗത ചിഹ്നങ്ങൾ',
+    stimuliValues: 'വിളക്ക് 🪔 · മയിൽ 🦚 · താമര 🪷',
+    healthIndex: 'ആരോഗ്യ സൂചിക',
+    healthyRange: 'സാധാരണ ആരോഗ്യ പരിധി',
+    lastChecked: 'അവസാനം പരിശോധിച്ചത്: 18 നവംബർ 2026',
+    screensTitle: 'പ്രധാന പരിചരണ പേജുകൾ',
+    screensSubtitle: 'നിങ്ങൾക്കും കുടുംബത്തിനും ആവശ്യമായ 4 പ്രധാന പേജുകൾ. താഴെ അമർത്തുക.',
+    cardAshaTag: 'ആശ & കുടുംബ സഹായം',
+    cardAshaTitle: 'ആശ & പരിചരണ സഹായ മോഡ്',
+    cardAshaDesc: 'പരിശോധനയ്ക്ക് മുന്നോടിയായി കണ്ണട, ശ്രവണസഹായി, പരിചരണ കുറിപ്പുകൾ എന്നിവ പരിശോധിക്കുക.',
+    cardAshaBtn: 'ആശ സഹായി തുറക്കുക',
+    cardAbhaTag: 'സർക്കാർ പിഎം-ജെ കവറേജ്',
+    cardAbhaTitle: 'ആയുഷ്മാൻ ഭാരത് (ABHA) കാർഡ്',
+    cardAbhaDesc: '14 അക്ക ABHA ഐഡി, ₹5 ലക്ഷം രൂപയുടെ ആരോഗ്യ സുരക്ഷ, പ്രാഥമിക ആരോഗ്യ കേന്ദ്രം.',
+    cardAbhaBtn: 'ആരോഗ്യ കാർഡ് കാണുക',
+    cardVitalsTag: 'രക്തസമ്മർദ്ദം: 128/82 mmHg',
+    cardVitalsTitle: 'ദിവസേനയുള്ള മരുന്നുകളും ബിപിയും',
+    cardVitalsDesc: 'രാവിലെ, ഉച്ചയ്ക്ക്, രാത്രി മരുന്നുകൾ വലിയ ബട്ടണുകൾ ഉപയോഗിച്ച് രേഖപ്പെടുത്തുക.',
+    cardVitalsBtn: 'മരുന്ന് പട്ടിക തുറക്കുക',
+    cardEmergencyTag: 'ഡയൽ 14416 / 108',
+    cardEmergencyTitle: 'അടിയന്തര 1-ടച്ച് എസ്ഒഎസ് അലർട്ട്',
+    cardEmergencyDesc: 'ജിപിഎസ് ലൊക്കേഷനോടെ കുടുംബാംഗങ്ങൾക്കും ആംബുലൻസിനും (108) 14416 നും തത്സമയ സന്ദേശം.',
+    cardEmergencyBtn: 'അടിയന്തര നമ്പറുകൾ കാണുക',
+    habitsTitle: 'ഇന്നത്തെ ലളിതമായ ആരോഗ്യ ശീലങ്ങൾ',
+    habitsSubtitle: 'പൂർത്തിയാകുമ്പോൾ അടയാളപ്പെടുത്തുക. നല്ല ശീലങ്ങൾ ഓർമ്മശക്തി വർദ്ധിപ്പിക്കും.',
+    habitWalkTitle: '15 മിനിറ്റ് പ്രഭാത നടത്തം',
+    habitWalkDesc: 'രക്തയോട്ടം തലച്ചോറിനെ ഉന്മേഷമുള്ളതാക്കുന്നു.',
+    habitMedsTitle: 'രാവിലെയുള്ള ബിപി മരുന്ന്',
+    habitMedsDesc: 'പ്രഭാതഭക്ഷണത്തിന് ശേഷം കഴിച്ചു (Telmisartan 40mg).',
+    habitWaterTitle: 'ആവശ്യത്തിന് വെള്ളം കുടിക്കുക',
+    habitWaterDesc: 'ആവശ്യത്തിന് വെള്ളം ക്ഷീണം അകറ്റും.',
+    phcTitle: 'പ്രാഥമിക ആരോഗ്യ കേന്ദ്രം',
+    caregiverPhone: 'പരിചാരകൻ: കാർത്തിക് (മകൻ: +91 98401 23456)',
+    callSonBtn: 'മകനെ വിളിക്കുക',
+    appointmentsBtn: 'അപ്പോയിന്റ്മെന്റുകൾ',
+    spokenText: (name: string) =>
+      `നമസ്കാരം ${name}. നിങ്ങളുടെ തലച്ചോറിന്റെ ആരോഗ്യം തികച്ചും സുരക്ഷിതമാണ്. ആശങ്കപ്പെടേണ്ടതില്ല. 5 മിനിറ്റ് പരിശോധന ആരംഭിക്കാൻ പച്ച ബട്ടൺ അമർത്തുക.`
+  },
+  kn: {
+    comfortEyebrow: 'ಹಿರಿಯ ನಾಗರಿಕರ ಆರೈಕೆ',
+    comfortSubtitle: 'ದೊಡ್ಡ ಬಟನ್‌ಗಳು, ಸ್ಪಷ್ಟ ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ, ಯಾವುದೇ ಕಷ್ಟಕರ ಪದಗಳಿಲ್ಲ.',
+    listenBtn: 'ಧ್ವನಿಯಲ್ಲಿ ಕೇಳಿ',
+    stopVoiceBtn: 'ಧ್ವನಿ ನಿಲ್ಲಿಸಿ',
+    statusPill: 'ಎಲ್ಲವೂ ಸಾಮಾನ್ಯ ಮತ್ತು ಆರೋಗ್ಯಕರವಾಗಿದೆ',
+    abhaPill: 'ಆಯುಷ್ಮಾನ್ ಭಾರತ್ ಜೋಡಿಸಲಾಗಿದೆ',
+    greeting: (name: string, isMorning: boolean) =>
+      isMorning ? `ಶುಭೋದಯ, ${name} ಅವರೇ` : `ನಮಸ್ಕಾರ, ${name} ಅವರೇ`,
+    summary:
+      'ನಿಮ್ಮ ಮೆದುಳಿನ ಆರೋಗ್ಯ, ಸ್ಮರಣಾಶಕ್ತಿ ಮತ್ತು ಚಲನೆಗಳು ಸಂಪೂರ್ಣವಾಗಿ ಸಾಮಾನ್ಯವಾಗಿದ್ದು, ಯಾವುದೇ ಆತಂಕವಿಲ್ಲ.',
+    docNoteTitle: 'ವೈದ್ಯರ ಟಿಪ್ಪಣಿ',
+    docNoteBody:
+      '"ರೋಗಿಯು ಚಟುವಟಿಕೆಯಿಂದ ಮತ್ತು ಜಾಗರೂಕರಾಗಿದ್ದಾರೆ. ಕಣ್ಣಿನ ಚಲನೆ ಮತ್ತು ಮಾತನಾಡುವ ವೇಗವು ಸ್ಥಿರವಾಗಿದೆ. ಪ್ರತಿದಿನ ಮುಂಜಾನೆಯ ನಡಿಗೆಯನ್ನು ಮುಂದುವರಿಸಿ."',
+    docSign: 'ಡಾ. ಪ್ರಿಯಾ ಸುಂದರಂ (ಪಿಎಚ್‌ಸಿ ವೈದ್ಯಾಧಿಕಾರಿ) · 18 ನವೆಂಬರ್ 2026',
+    startCheckin: '5 ನಿಮಿಷಗಳ ಪರೀಕ್ಷೆ ಪ್ರಾರಂಭಿಸಿ',
+    stimuliLabel: 'ಸಾಂಸ್ಕೃತಿಕ ಚಿಹ್ನೆಗಳು',
+    stimuliValues: 'ದೀಪ 🪔 · ನವಿಲು 🦚 · ಕಮಲ 🪷',
+    healthIndex: 'ಆರೋಗ್ಯ ಸೂಚ್ಯಂಕ',
+    healthyRange: 'ಸಾಮಾನ್ಯ ಆರೋಗ್ಯ ಶ್ರೇಣಿ',
+    lastChecked: 'ಕೊನೆಯ ಪರಿಶೀಲನೆ: 18 ನವೆಂಬರ್ 2026',
+    screensTitle: 'ಮುಖ್ಯ ಆರೈಕೆ ಪುಟಗಳು',
+    screensSubtitle: 'ನಿಮಗೆ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕೆ ಅಗತ್ಯವಿರುವ 4 ಮುಖ್ಯ ಪುಟಗಳು. ಕೆಳಗೆ ಒತ್ತಿರಿ.',
+    cardAshaTag: 'ಆಶಾ & ಕುಟುಂಬ ನೆರವು',
+    cardAshaTitle: 'ಆಶಾ & ಆರೈಕೆದಾರರ ಸಹಾಯಕ ಮೋಡ್',
+    cardAshaDesc: 'ಪರೀಕ್ಷೆಗೆ ಮುನ್ನ ಕನ್ನಡಕ, ಶ್ರವಣ ಸಾಧನ ಮತ್ತು ಆರೈಕೆದಾರರ ಟಿಪ್ಪಣಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.',
+    cardAshaBtn: 'ಆಶಾ ಸಹಾಯ ತೆರೆಯಿರಿ',
+    cardAbhaTag: 'ಸರ್ಕಾರಿ ಪಿಎಂ-ಜೆ ರಕ್ಷಣೆ',
+    cardAbhaTitle: 'ಆಯುಷ್ಮಾನ್ ಭಾರತ್ (ABHA) ಕಾರ್ಡ್',
+    cardAbhaDesc: '14 ಅಂಕಿಯ ABHA ಐಡಿ, ₹5 ಲಕ್ಷ ಹಿರಿಯ ನಾಗರಿಕರ ಆರೋಗ್ಯ ರಕ್ಷಣೆ ಮತ್ತು ಸ್ಥಳೀಯ ಆರೋಗ್ಯ ಕೇಂದ್ರ.',
+    cardAbhaBtn: 'ಆರೋಗ್ಯ ಕಾರ್ಡ್ ನೋಡಿ',
+    cardVitalsTag: 'ರಕ್ತದೊತ್ತಡ: 128/82 mmHg',
+    cardVitalsTitle: 'ದೈನಂದಿನ ಮಾತ್ರೆಗಳು ಮತ್ತು ರಕ್ತದೊತ್ತಡ',
+    cardVitalsDesc: 'ಬೆಳಿಗ್ಗೆ, ಮಧ್ಯಾಹ್ನ ಮತ್ತು ರಾತ್ರಿಯ ಔಷಧಿಗಳನ್ನು ದೊಡ್ಡ ಬಟನ್‌ಗಳೊಂದಿಗೆ ಸುಲಭವಾಗಿ ಗುರುತಿಸಿ.',
+    cardVitalsBtn: 'ಮಾತ್ರೆಗಳ ಪಟ್ಟಿ ತೆರೆಯಿರಿ',
+    cardEmergencyTag: 'ಡಯಲ್ 14416 / 108',
+    cardEmergencyTitle: 'ತುರ್ತು 1-ಟ್ಯಾಪ್ ಎಸ್‌ಒಎಸ್ ಎಚ್ಚರಿಕೆ',
+    cardEmergencyDesc: 'ಜಿಪಿಎಸ್ ಸ್ಥಳದೊಂದಿಗೆ ಕುಟುಂಬ ಸದಸ್ಯರು, ಆಂಬ್ಯುಲೆನ್ಸ್ (108) ಮತ್ತು 14416 ಸಹಾಯವಾಣಿಗೆ ತಕ್ಷಣದ ಎಚ್ಚರಿಕೆ.',
+    cardEmergencyBtn: 'ತುರ್ತು ಸಂಪರ್ಕಗಳನ್ನು ನೋಡಿ',
+    habitsTitle: 'ಇಂದಿನ ಸರಳ ಆರೋಗ್ಯಕರ ಅಭ್ಯಾಸಗಳು',
+    habitsSubtitle: 'ಪೂರ್ಣಗೊಂಡಾಗ ಗುರುತು ಮಾಡಿ. ಉತ್ತಮ ಅಭ್ಯಾಸಗಳು ಸ್ಮರಣಾಶಕ್ತಿಯನ್ನು ಚುರುಕಾಗಿರಿಸುತ್ತವೆ.',
+    habitWalkTitle: '15 ನಿಮಿಷಗಳ ಮುಂಜಾನೆಯ ನಡಿಗೆ',
+    habitWalkDesc: 'ರಕ್ತ ಪರಿಚಲನೆ ಮೆದುಳನ್ನು ಚುರುಕಾಗಿರಿಸುತ್ತದೆ.',
+    habitMedsTitle: 'ಮುಂಜಾನೆಯ ಬಿಪಿ ಮಾತ್ರೆ',
+    habitMedsDesc: 'ಉಪಾಹಾರದ ನಂತರ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ (Telmisartan 40mg).',
+    habitWaterTitle: 'ಸಾಕಷ್ಟು ನೀರು ಕುಡಿಯುವುದು',
+    habitWaterDesc: 'ಸಾಕಷ್ಟು ನೀರು ದಣಿವನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.',
+    phcTitle: 'ಪ್ರಾಥಮಿಕ ಆರೋಗ್ಯ ಕೇಂದ್ರ',
+    caregiverPhone: 'ಆರೈಕೆದಾರ: ಕಾರ್ತಿಕ್ (ಮಗ: +91 98401 23456)',
+    callSonBtn: 'ಮಗನಿಗೆ ಕರೆ ಮಾಡಿ',
+    appointmentsBtn: 'ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಳು',
+    spokenText: (name: string) =>
+      `ನಮಸ್ಕಾರ ${name} ಅವರೇ. ನಿಮ್ಮ ಮೆದುಳಿನ ಆರೋಗ್ಯವು ಸಂಪೂರ್ಣವಾಗಿ ಸ್ಥಿರವಾಗಿದೆ. ಯಾವುದೇ ಆತಂಕವಿಲ್ಲ. 5 ನಿಮಿಷಗಳ ಪರೀಕ್ಷೆಗಾಗಿ ಹಸಿರು ಬಟನ್ ಒತ್ತಿರಿ.`
   }
 };
 
@@ -201,9 +363,8 @@ export const PatientDashboardPage: React.FC = () => {
   const [morningMeds, setMorningMeds] = useState(true);
   const [waterGlasses, setWaterGlasses] = useState(true);
 
-  // Pick active localized dictionary (default to en if unknown)
-  const langKey = (currentLanguage === 'ta' || currentLanguage === 'hi') ? currentLanguage : 'en';
-  const t = dashboardCopyByLang[langKey];
+  // Pick active localized dictionary (supports all 6 languages, defaults to en)
+  const t = dashboardCopyByLang[currentLanguage] || dashboardCopyByLang.en;
 
   const firstName = (user?.name || 'Ramanathan').split(' ')[0];
   const isMorning = new Date().getHours() < 12;
@@ -223,10 +384,10 @@ export const PatientDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* 1. TOP COMFORT BAR & INSTANT LANGUAGE SELECTOR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-warm p-4 shadow-sm">
+      {/* 1. TOP COMFORT BAR & INSTANT LANGUAGE SELECTOR (ALL 6 LANGUAGES) */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-warm p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold text-lg shadow-xs">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold text-lg shadow-xs">
             👴
           </span>
           <div>
@@ -240,49 +401,37 @@ export const PatientDashboardPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Quick 1-Click Language Switcher (English / தமிழ் / हिन्दी) */}
-          <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+          {/* Quick 1-Click Language Switcher (All 6 Languages) */}
+          <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
             <Globe className="h-3.5 w-3.5 text-slate-400 ms-1.5 me-0.5" />
-            <button
-              type="button"
-              onClick={() => handleLanguageSwitch('en')}
-              className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                currentLanguage === 'en'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLanguageSwitch('ta')}
-              className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                currentLanguage === 'ta'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              தமிழ்
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLanguageSwitch('hi')}
-              className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                currentLanguage === 'hi'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              हिन्दी
-            </button>
+            {[
+              { id: 'en', label: 'English' },
+              { id: 'ta', label: 'தமிழ்' },
+              { id: 'hi', label: 'हिन्दी' },
+              { id: 'te', label: 'తెలుగు' },
+              { id: 'ml', label: 'മലയാളം' },
+              { id: 'kn', label: 'ಕನ್ನಡ' }
+            ].map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handleLanguageSwitch(id as SupportedLanguage)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
+                  currentLanguage === id
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {/* Big Spoken Audio Button */}
           <button
             type="button"
             onClick={handleVoiceSummary}
-            className="flex items-center gap-2 rounded-full border border-emerald-300 bg-white px-4 py-2 text-xs sm:text-sm font-bold text-emerald-800 shadow-sm hover:bg-emerald-50 transition active:scale-95"
+            className="flex items-center gap-2 rounded-full border border-emerald-300 bg-white px-4 py-2 text-xs sm:text-sm font-bold text-emerald-800 shadow-sm hover:bg-emerald-50 transition active:scale-95 shrink-0"
           >
             {isSpeaking ? (
               <VolumeX className="h-4 w-4 text-rose-600 animate-pulse" />

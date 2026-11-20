@@ -511,14 +511,230 @@ const hi: PortalTranslation = {
   }
 };
 
+const te: PortalTranslation = {
+  ...en,
+  portalName: 'రోగి పోర్టల్',
+  patientPortal: 'రోగి పోర్టల్',
+  signOut: 'లాగ్ అవుట్',
+  skipToContent: 'కంటెంట్‌కు వెళ్లండి',
+  notifications: 'నోటిఫికేషన్లు',
+  notificationsUnread: 'చదవనివి',
+  footerLine1: 'న్యూరాలజీ & బ్రెయిన్ హెల్త్',
+  footerLine2: 'కేవలం స్క్రీనింగ్ సహాయం మాత్రమే, తుది రోగ నిర్ధారణ కాదు.',
+  nav: {
+    groups: {
+      Home: 'హోమ్',
+      'Senior Care': 'సీనియర్ కేర్',
+      Assessment: 'అసెస్మెంట్',
+      Monitoring: 'పర్యవేక్షణ',
+      'Health context': 'ఆరోగ్య వివరాలు',
+      Care: 'సంరక్షణ',
+      Account: 'ఖాతా'
+    },
+    items: {
+      '/patient/dashboard': 'డ్యాష్‌బోర్డ్',
+      '/patient/brain-health': 'మెదడు ఆరోగ్యం',
+      '/patient/timeline': 'ఆరోగ్య టైమ్‌లైన్',
+      '/patient/asha-companion': 'ఆశా & సంరక్షకుల సహాయం',
+      '/patient/abha-health': 'ఆయుష్మాన్ భారత్ (ABHA)',
+      '/patient/geriatric-vitals': 'మందులు & బీపీ',
+      '/patient/emergency-sos': 'అత్యవసర సహాయం (14416 / 108)',
+      '/patient/assessment/intro': 'పరీక్ష ప్రారంభించండి',
+      '/patient/cognitive': 'అభిజ్ఞా పరీక్ష',
+      '/patient/cognitive/library': 'టాస్క్ లైబ్రరీ',
+      '/patient/history': 'చరిత్ర',
+      '/patient/daily-function': 'రోజువారీ విధుల ప్రశ్నాపత్రం',
+      '/patient/documents': 'నివేదికలు & పత్రాలు',
+      '/patient/trends': 'దీర్ఘకాలిక ధోరణులు',
+      '/patient/change-detection': 'మార్పుల గుర్తింపు',
+      '/patient/health-profile': 'ఆరోగ్య ప్రొఫైల్',
+      '/patient/context': 'సందర్భ అవలోకనం',
+      '/patient/context/assessment-conditions': 'పరీక్ష పరిస్థితులు',
+      '/patient/context/sleep': 'నిద్ర & జీవనశైలి',
+      '/patient/context/wellbeing': 'మానసిక ఆరోగ్యం',
+      '/patient/context/clinical': 'వైద్య చరిత్ర',
+      '/patient/prevention-plan': 'నివారణ ప్రణాళిక',
+      '/patient/appointments': 'అపాయింట్‌మెంట్లు',
+      '/patient/care-plan': 'సంరక్షణ ప్రణాళిక',
+      '/patient/notifications': 'నోటిఫికేషన్లు',
+      '/patient/profile': 'నా ప్రొఫైల్',
+      '/patient/settings': 'ఖాతా సెట్టింగ్‌లు',
+      '/patient/privacy': 'గోప్యత & డేటా',
+      '/patient/help': 'సహాయం'
+    }
+  },
+  shell: {
+    ...en.shell,
+    navLabel: 'ప్రధాన నావిగేషన్',
+    closeNav: 'నావిగేషన్ మూసివేయి',
+    openNav: 'నావిగేషన్ తెరవండి',
+    patientFallback: 'రోగి',
+    careTeam: 'సంరక్షణ బృందం',
+    toBeConfirmed: 'నిర్ధారించబడాలి',
+    logoutDescription: 'మీరు లాగ్ అవుట్ చేయాలనుకుంటున్నారా?',
+    logoutConfirm: 'లాగ్ అవుట్',
+    logoutCancel: 'రద్దు చేయండి',
+    status: {
+      inProgress: 'పురోగతిలో ఉంది',
+      reviewed: 'సమీక్షించబడింది',
+      followUpSuggested: 'ఫాలో-అప్ సిఫార్సు చేయబడింది',
+      awaitingReview: 'సమీక్ష కోసం వేచి ఉంది'
+    }
+  }
+};
+
+const ml: PortalTranslation = {
+  ...en,
+  portalName: 'രോഗി പോർട്ടൽ',
+  patientPortal: 'രോഗി പോർട്ടൽ',
+  signOut: 'ലോഗ് ഔട്ട്',
+  skipToContent: 'ഉള്ളടക്കത്തിലേക്ക് പോകുക',
+  notifications: 'അറിയിപ്പുകൾ',
+  notificationsUnread: 'വായിക്കാത്തവ',
+  footerLine1: 'ന്യൂറോളജി & മസ്തിഷ്ക ആരോഗ്യം',
+  footerLine2: 'സ്ക്രീനിംഗ് സഹായം മാത്രം, അന്തിമ രോഗനിർണ്ണയമല്ല.',
+  nav: {
+    groups: {
+      Home: 'ഹോം',
+      'Senior Care': 'മുതിർന്നവരുടെ പരിചരണം',
+      Assessment: 'പരിശോധന',
+      Monitoring: 'നിരീക്ഷണം',
+      'Health context': 'ആരോഗ്യ വിവരങ്ങൾ',
+      Care: 'പരിചരണം',
+      Account: 'അക്കൗണ്ട്'
+    },
+    items: {
+      '/patient/dashboard': 'ഡാഷ്‌ബോർഡ്',
+      '/patient/brain-health': 'തലച്ചോറിന്റെ ആരോഗ്യം',
+      '/patient/timeline': 'ആരോഗ്യ ടൈംലൈൻ',
+      '/patient/asha-companion': 'ആശ & പരിചരണ സഹായം',
+      '/patient/abha-health': 'ആയുഷ്മാൻ ഭാരത് (ABHA)',
+      '/patient/geriatric-vitals': 'മരുന്നുകളും ബിപിയും',
+      '/patient/emergency-sos': 'അടിയന്തര സഹായം (14416 / 108)',
+      '/patient/assessment/intro': 'പരിശോധന ആരംഭിക്കുക',
+      '/patient/cognitive': 'വൈജ്ഞാനിക പരിശോധന',
+      '/patient/cognitive/library': 'ടാസ്ക് ലൈബ്രറി',
+      '/patient/history': 'ചരിത്രം',
+      '/patient/daily-function': 'ദൈനംദിന ചോദ്യാവലി',
+      '/patient/documents': 'റിപ്പോർട്ടുകൾ & രേഖകൾ',
+      '/patient/trends': 'ദീർഘകാല മാറ്റങ്ങൾ',
+      '/patient/change-detection': 'മാറ്റങ്ങൾ കണ്ടെത്തൽ',
+      '/patient/health-profile': 'ആരോഗ്യ പ്രൊഫൈൽ',
+      '/patient/context': 'വിവരങ്ങളുടെ അവലോകനം',
+      '/patient/context/assessment-conditions': 'പരിശോധനാ സാഹചര്യം',
+      '/patient/context/sleep': 'ഉറക്കവും ജീവിതശൈലിയും',
+      '/patient/context/wellbeing': 'മാനസികാരോഗ്യം',
+      '/patient/context/clinical': 'ചികിത്സാ ചരിത്രം',
+      '/patient/prevention-plan': 'പ്രതിരോധ പദ്ധതി',
+      '/patient/appointments': 'അപ്പോയിന്റ്മെന്റുകൾ',
+      '/patient/care-plan': 'പരിചരണ പദ്ധതി',
+      '/patient/notifications': 'അറിയിപ്പുകൾ',
+      '/patient/profile': 'എന്റെ പ്രൊഫൈൽ',
+      '/patient/settings': 'ക്രമീകരണങ്ങൾ',
+      '/patient/privacy': 'സ്വകാര്യത & ഡാറ്റ',
+      '/patient/help': 'സഹായം'
+    }
+  },
+  shell: {
+    ...en.shell,
+    navLabel: 'പ്രധാന നാവിഗേഷൻ',
+    closeNav: 'നാവിഗേഷൻ അടയ്ക്കുക',
+    openNav: 'നാവിഗേഷൻ തുറക്കുക',
+    patientFallback: 'രോഗി',
+    careTeam: 'പരിചരണ സംഘം',
+    toBeConfirmed: 'സ്ഥിരീകരിക്കേണ്ടതുണ്ട്',
+    logoutDescription: 'ലോഗ് ഔട്ട് ചെയ്യാൻ താൽപ്പര്യമുണ്ടോ?',
+    logoutConfirm: 'ലോഗ് ഔട്ട്',
+    logoutCancel: 'റദ്ദാക്കുക',
+    status: {
+      inProgress: 'പുരോഗമിക്കുന്നു',
+      reviewed: 'പരിശോധിച്ചു',
+      followUpSuggested: 'തുടർചികിത്സ നിർദ്ദേശിച്ചു',
+      awaitingReview: 'പരിശോധനയ്ക്കായി കാത്തിരിക്കുന്നു'
+    }
+  }
+};
+
+const kn: PortalTranslation = {
+  ...en,
+  portalName: 'ರೋಗಿ ಪೋರ್ಟಲ್',
+  patientPortal: 'ರೋಗಿ ಪೋರ್ಟಲ್',
+  signOut: 'ಸೈನ್ ಔಟ್',
+  skipToContent: 'ವಿಷಯಕ್ಕೆ ತೆರಳಿ',
+  notifications: 'ಸೂಚನೆಗಳು',
+  notificationsUnread: 'ಓದದಿರುವುದು',
+  footerLine1: 'ನರಶಾಸ್ತ್ರ ಮತ್ತು ಮೆದುಳಿನ ಆರೋಗ್ಯ',
+  footerLine2: 'ಸ್ಕ್ರೀನಿಂಗ್ ಸಹಾಯ ಮಾತ್ರ, ಅಂತಿಮ ರೋಗನಿರ್ಣಯವಲ್ಲ.',
+  nav: {
+    groups: {
+      Home: 'ಮುಖಪುಟ',
+      'Senior Care': 'ಹಿರಿಯ ನಾಗರಿಕರ ಆರೈಕೆ',
+      Assessment: 'ಮೌಲ್ಯಮಾಪನ',
+      Monitoring: 'ಮೇಲ್ವಿಚಾರಣೆ',
+      'Health context': 'ಆರೋಗ್ಯ ಮಾಹಿತಿ',
+      Care: 'ಆರೈಕೆ',
+      Account: 'ಖಾತೆ'
+    },
+    items: {
+      '/patient/dashboard': 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+      '/patient/brain-health': 'ಮೆದುಳಿನ ಆರೋಗ್ಯ',
+      '/patient/timeline': 'ಆರೋಗ್ಯ ಕಾಲಾವಧಿ',
+      '/patient/asha-companion': 'ಆಶಾ ಮತ್ತು ಆರೈಕೆದಾರರ ನೆರವು',
+      '/patient/abha-health': 'ಆಯುಷ್ಮಾನ್ ಭಾರತ್ (ABHA)',
+      '/patient/geriatric-vitals': 'ಮಾತ್ರೆಗಳು ಮತ್ತು ಬಿಪಿ',
+      '/patient/emergency-sos': 'ತುರ್ತು ಸಹಾಯ (14416 / 108)',
+      '/patient/assessment/intro': 'ಪರೀಕ್ಷೆ ಪ್ರಾರಂಭಿಸಿ',
+      '/patient/cognitive': 'ಜ್ಞಾನಗ್ರಹಣ ಪರೀಕ್ಷೆ',
+      '/patient/cognitive/library': 'ಕಾರ್ಯ ಲೈಬ್ರರಿ',
+      '/patient/history': 'ಇತಿಹಾಸ',
+      '/patient/daily-function': 'ದೈನಂದಿನ ಕಾರ್ಯ ಪ್ರಶ್ನಾವಳಿ',
+      '/patient/documents': 'ವರದಿಗಳು ಮತ್ತು ದಾಖಲೆಗಳು',
+      '/patient/trends': 'ದೀರ್ಘಕಾಲೀನ ಪ್ರವೃತ್ತಿಗಳು',
+      '/patient/change-detection': 'ಬದಲಾವಣೆಗಳ ಗುರುತಿಸುವಿಕೆ',
+      '/patient/health-profile': 'ಆರೋಗ್ಯ ಪ್ರೊಫೈಲ್',
+      '/patient/context': 'ಮಾಹಿತಿ ಅವಲೋಕನ',
+      '/patient/context/assessment-conditions': 'ಪರೀಕ್ಷಾ ಪರಿಸ್ಥಿತಿ',
+      '/patient/context/sleep': 'ನಿದ್ರೆ ಮತ್ತು ಜೀವನಶೈಲಿ',
+      '/patient/context/wellbeing': 'ಮಾನಸಿಕ ಯೋಗಕ್ಷೇಮ',
+      '/patient/context/clinical': 'ವೈದ್ಯಕೀಯ ಇತಿಹಾಸ',
+      '/patient/prevention-plan': 'ತಡೆಗಟ್ಟುವಿಕೆ ಯೋಜನೆ',
+      '/patient/appointments': 'ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಳು',
+      '/patient/care-plan': 'ಆರೈಕೆ ಯೋಜನೆ',
+      '/patient/notifications': 'ಸೂಚನೆಗಳು',
+      '/patient/profile': 'ನನ್ನ ಪ್ರೊಫೈಲ್',
+      '/patient/settings': 'ಖಾತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
+      '/patient/privacy': 'ಗೌಪ್ಯತೆ ಮತ್ತು ಡೇಟಾ',
+      '/patient/help': 'ಸಹಾಯ'
+    }
+  },
+  shell: {
+    ...en.shell,
+    navLabel: 'ಮುಖ್ಯ ನ್ಯಾವಿಗೇಷನ್',
+    closeNav: 'ನ್ಯಾವಿಗೇಷನ್ ಮುಚ್ಚಿ',
+    openNav: 'ನ್ಯಾವಿಗೇಷನ್ ತೆರೆಯಿರಿ',
+    patientFallback: 'ರೋಗಿ',
+    careTeam: 'ಆರೈಕೆ ತಂಡ',
+    toBeConfirmed: 'ದೃಢೀಕರಿಸಬೇಕಿದೆ',
+    logoutDescription: 'ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ?',
+    logoutConfirm: 'ಸೈನ್ ಔಟ್',
+    logoutCancel: 'ರದ್ದುಮಾಡಿ',
+    status: {
+      inProgress: 'ಪ್ರಗತಿಯಲ್ಲಿದೆ',
+      reviewed: 'ಪರಿಶೀಲಿಸಲಾಗಿದೆ',
+      followUpSuggested: 'ಮುಂದಿನ ತಪಾಸಣೆ ಸಲಹೆ ನೀಡಲಾಗಿದೆ',
+      awaitingReview: 'ಪರಿಶೀಲನೆಗೆ ಕಾಯಲಾಗುತ್ತಿದೆ'
+    }
+  }
+};
+
 const translations: Record<SupportedLanguage, PortalTranslation> = {
   en,
   ar,
   ta,
   hi,
-  te: en,
-  ml: en,
-  kn: en
+  te,
+  ml,
+  kn
 };
 
 export function getPortalTranslation(lang: SupportedLanguage): PortalTranslation {
