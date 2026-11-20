@@ -359,6 +359,14 @@ export const DoctorDashboardPage: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-blue-400"></span>
             MediaPipe Gaze & Face
           </div>
+          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+            Gemini 2.5 Flash Copilot
+          </div>
+          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-teal-400"></span>
+            Google Gemma 2 (2B) Rural Edge
+          </div>
         </div>
       </div>
 

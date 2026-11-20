@@ -18,7 +18,8 @@ import {
   Building,
   User,
   Sparkles,
-  Download
+  Download,
+  Hospital
 } from 'lucide-react';
 import { doctorApi } from '../../services/portalApi';
 import { aiServiceApi } from '../../services/aiServiceApi';
@@ -657,6 +658,19 @@ export const DoctorReportViewPage: React.FC = () => {
                   </ul>
                 </div>
               </div>
+
+              {/* Vernacular Rural Guidance (ASHA / ANM Community Health Worker Note) */}
+              {clinicalInsight.vernacularWorkerAdvice && (
+                <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/90 text-xs">
+                  <div className="font-bold text-amber-900 mb-1 flex items-center gap-1.5">
+                    <Hospital className="w-3.5 h-3.5 text-amber-700" />
+                    Indian PHC / ASHA Community Worker Triage Note ({patient.language}):
+                  </div>
+                  <p className="text-amber-950 font-medium leading-relaxed">
+                    {clinicalInsight.vernacularWorkerAdvice}
+                  </p>
+                </div>
+              )}
 
               {/* Footer Provenance Strip & Append Button */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 text-[11px] text-muted">

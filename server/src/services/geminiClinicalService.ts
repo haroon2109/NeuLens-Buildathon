@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { getLlmConfig } from './assistantLlm';
 import { GeminiKeyPool } from './geminiService';
+import { gemmaLocalService } from './google/gemmaLocalService';
 
 export interface ClinicalInsightRequest {
   patient: {
@@ -49,6 +50,7 @@ export interface ClinicalInsightResponse {
   };
   differentialConsiderations: string[];
   recommendedActions: string[];
+  vernacularWorkerAdvice?: string;
   modelUsed: string;
   provider: 'google-gemini' | 'google-gemma-local' | 'deterministic-clinician-model';
   generatedAt: string;
@@ -68,110 +70,36 @@ function generateCacheKey(data: ClinicalInsightRequest, modelChoice: string): st
  * instruction fine-tuning tags (<start_of_turn>user ... <end_of_turn><start_of_turn>model).
  */
 async function generateGemma2Insight(data: ClinicalInsightRequest): Promise<ClinicalInsightResponse> {
-  const score = data.assessment.score;
-  const latency = data.metrics.saccadicLatencyMs ?? 220;
-  const trailSec = data.metrics.trailBCompletionSec ?? 42;
-  const symmetry = data.metrics.facialSymmetryPct ?? 94;
-  const speechRate = data.metrics.speechRateWpm ?? 120;
-
-  // Attempt local Ollama endpoint if running on localhost:11434 with gemma2:2b
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2500);
-
-    const gemmaPrompt = `<start_of_turn>user
-You are Google Gemma 2 (2B) Clinical Triage Engine deployed for offline Indian Primary Health Centers (PHCs).
-Generate a concise neurocognitive screening summary for the attending physician.
-Telemetry:
-- Patient: ID ${data.patient.patientId}, Age ${data.patient.age}, Gender ${data.patient.gender}
-- Composite Index: ${score}/100
-- Saccadic Latency: ${latency} ms
-- Speech Rate: ${speechRate} WPM
-- Facial Symmetry: ${symmetry}%
-- Trail Making Part B: ${trailSec}s (${data.metrics.sequencingErrors ?? 0} sequencing revisions)
-Respond strictly in JSON matching:
-{
-  "executiveSummary": "...",
-  "domainFindings": { "ocular": "...", "vocal": "...", "facial": "...", "executiveAndMemory": "..." },
-  "differentialConsiderations": ["..."],
-  "recommendedActions": ["..."]
-}
-<end_of_turn>
-<start_of_turn>model
-`;
-
-    const ollamaRes = await fetch('http://127.0.0.1:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gemma2:2b',
-        prompt: gemmaPrompt,
-        stream: false,
-        format: 'json'
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
-
-    if (ollamaRes.ok) {
-      const ollamaData = await ollamaRes.json() as { response?: string };
-      if (ollamaData.response) {
-        const parsed = JSON.parse(ollamaData.response);
-        return {
-          executiveSummary: parsed.executiveSummary || 'Gemma 2 (2B) rural edge triage summary generated.',
-          domainFindings: parsed.domainFindings || {
-            ocular: `Ocular saccadic latency measured at ${latency} ms.`,
-            vocal: `Speech pace at ${speechRate} WPM.`,
-            facial: `Facial symmetry evaluated at ${symmetry}%.`,
-            executiveAndMemory: `Trail Making Part B completed in ${trailSec}s.`
-          },
-          differentialConsiderations: parsed.differentialConsiderations || ['Correlate with clinical history.'],
-          recommendedActions: parsed.recommendedActions || ['Review at community health center.'],
-          modelUsed: 'Google Gemma 2 (2B - Local Ollama Edge)',
-          provider: 'google-gemma-local',
-          generatedAt: new Date().toISOString()
-        };
-      }
-    }
-  } catch {
-    // Local Ollama offline; fallback to Gemma 2 (2B) rule-guided edge synthesis
-  }
-
-  // Edge / Rural PHC offline triage synthesis (Google Gemma 2B architecture)
-  const isOptimal = score >= 75;
-  return {
-    executiveSummary: isOptimal
-      ? `[Gemma 2B Offline Triage]: Age-congruent functional profile for ${data.patient.age}-year-old patient. Composite rating (${score}/100) demonstrates intact sensorimotor and executive faculties. Recommended for routine community screening interval.`
-      : `[Gemma 2B Offline Triage]: Moderate psychomotor divergence observed (Composite ${score}/100). Saccadic initiation (${latency} ms) and psychomotor trail sequencing (${trailSec}s) warrant primary care doctor correlation in rural PHC workflow.`,
-    domainFindings: {
-      ocular: latency > 300
-        ? `Saccadic reaction latency mildly prolonged (${latency} ms) relative to geriatric baseline. Fixation stability remained centered.`
-        : `Normal oculomotor saccadic latency (${latency} ms) tracked via on-device MediaPipe vision engine.`,
-      vocal: speechRate < 95
-        ? `Reduced spontaneous vocal pace (${speechRate} WPM) with inter-phrase hesitation. Fundamental pitch frequency (${data.metrics.pitchHz ?? 160} Hz) nominal.`
-        : `Fluid conversational tempo (${speechRate} WPM) with preserved acoustic micro-prosody.`,
-      facial: symmetry < 85
-        ? `Mild bilateral asymmetry in perioral motor engagement (${symmetry}%). 3D landmark mesh tracked without resting tremor.`
-        : `Symmetric facial kinematics (${symmetry}%) across dynamic smile and brow elevation tasks.`,
-      executiveAndMemory: trailSec > 60 || (data.metrics.sequencingErrors ?? 0) > 1
-        ? `Executive friction on digital Trail Making Part B (${trailSec}s, ${data.metrics.sequencingErrors ?? 1} revisions). Memory pattern retention achieved ${data.metrics.memoryMatchedPairs ?? 3} pairs.`
-        : `Intact working memory recall and brisk executive sequencing on Trail Making Part B (${trailSec}s).`
+  const result = await gemmaLocalService.triage(
+    {
+      patientId: data.patient.patientId,
+      age: data.patient.age,
+      gender: data.patient.gender,
+      educationYears: data.patient.educationYears,
+      language: data.patient.language
     },
-    differentialConsiderations: [
-      isOptimal
-        ? 'Preserved neurocognitive baseline; continue annual community monitoring.'
-        : 'Early psychomotor slowing vs. transient exhaustion / sleep deficit.',
-      data.context?.sleepIssues
-        ? 'Documented sleep disturbance may depress morning reaction time scores.'
-        : 'Cranial nerve VII and oculomotor motor functions appear intact.'
-    ],
-    recommendedActions: [
-      isOptimal
-        ? 'Re-screen at primary health center in 6-12 months for longitudinal baseline tracking.'
-        : 'Refer to district hospital specialist for formal in-person MoCA / HMSE battery.',
-      'Correlate with blood pressure and blood glucose checks at local PHC.'
-    ],
-    modelUsed: 'Google Gemma 2 (2B - On-Device Edge / Ollama)',
+    {
+      id: data.assessment.id,
+      date: data.assessment.date,
+      score: data.assessment.score,
+      classification: data.assessment.classification,
+      saccadicLatencyMs: data.metrics.saccadicLatencyMs,
+      fixationHoldScore: data.metrics.fixationHoldScore,
+      speechRateWpm: data.metrics.speechRateWpm,
+      pitchHz: data.metrics.pitchHz,
+      facialSymmetryPct: data.metrics.facialSymmetryPct,
+      trailBCompletionSec: data.metrics.trailBCompletionSec,
+      sequencingErrors: data.metrics.sequencingErrors,
+      memoryMatchedPairs: data.metrics.memoryMatchedPairs
+    }
+  );
+
+  return {
+    executiveSummary: result.executiveSummary,
+    domainFindings: result.domainFindings,
+    differentialConsiderations: result.differentialConsiderations,
+    recommendedActions: result.recommendedActions,
+    modelUsed: result.modelUsed,
     provider: 'google-gemma-local',
     generatedAt: new Date().toISOString()
   };
