@@ -1073,7 +1073,7 @@ export const DoctorPatientProfilePage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Task 3: Vocal Echo (Gnani AI) */}
+                    {/* Task 3: Vocal Echo (Google AI Speech) */}
                     <div className="bg-white p-5 rounded-2xl border border-line shadow-card space-y-4 md:col-span-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -1082,11 +1082,11 @@ export const DoctorPatientProfilePage: React.FC = () => {
                           </div>
                           <div>
                             <h4 className="font-bold text-ink text-sm">Task 3: Vocal Echo Speech Repetition</h4>
-                            <p className="text-xs text-muted">Gnani Prisma v2.5 STT & Web Audio Acoustic Telemetry</p>
+                            <p className="text-xs text-muted">Google AI Speech (Chirp 2 / Gemini Audio) & Web Audio Acoustics</p>
                           </div>
                         </div>
                         <span className="px-2 py-0.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700">
-                          Gnani AI STT
+                          Google AI Speech
                         </span>
                       </div>
 

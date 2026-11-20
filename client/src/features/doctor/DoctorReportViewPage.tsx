@@ -44,6 +44,10 @@ export const DoctorReportViewPage: React.FC = () => {
   } | null>(null);
   const [generatingExplanation, setGeneratingExplanation] = useState(false);
   const [explanationError, setExplanationError] = useState<string | null>(null);
+  const [copilotModel, setCopilotModel] = useState<'gemini-2.5-flash' | 'gemma-2-2b'>('gemini-2.5-flash');
+  const [clinicalInsight, setClinicalInsight] = useState<any | null>(null);
+  const [generatingInsight, setGeneratingInsight] = useState(false);
+  const [insightError, setInsightError] = useState<string | null>(null);
   const [savingReview, setSavingReview] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -82,6 +86,20 @@ export const DoctorReportViewPage: React.FC = () => {
 
     fetchReport();
   }, [id]);
+
+  const handleGenerateInsight = async (model: 'gemini-2.5-flash' | 'gemma-2-2b' = copilotModel) => {
+    if (!reportData?.assessment?.id) return;
+    setGeneratingInsight(true);
+    setInsightError(null);
+    try {
+      const insight = await doctorApi.getClinicalInsight(reportData.assessment.id, model);
+      setClinicalInsight(insight);
+    } catch (err: any) {
+      setInsightError(err?.message || 'Failed to generate clinical copilot insight.');
+    } finally {
+      setGeneratingInsight(false);
+    }
+  };
 
   const handleGenerateExplanation = async () => {
     setGeneratingExplanation(true);
@@ -477,7 +495,7 @@ export const DoctorReportViewPage: React.FC = () => {
             </div>
 
             <div className="pt-2 border-t border-line">
-              <span className="font-bold text-slate-800 block mb-0.5">Gnani Prisma v2.5 Speech Transcription:</span>
+              <span className="font-bold text-slate-800 block mb-0.5">Google AI Speech-to-Text (Chirp 2 / Gemini Multimodal Audio):</span>
               <p className="text-body italic">
                 {taskData.task3?.transcript ? `“${taskData.task3.transcript}”` : 'No transcript was recorded for this session.'}
               </p>
@@ -495,6 +513,179 @@ export const DoctorReportViewPage: React.FC = () => {
             {assessment.report?.recommendation ||
               'No screening impression was recorded for this session. Review the recorded measurements above and document your own interpretation.'}
           </p>
+        </div>
+
+        {/* ------------------------------------------------------------- */}
+        {/* GOOGLE AI CLINICAL DECISION SUPPORT COPILOT                   */}
+        {/* Multimodal Gemini 2.5 Flash & Google Gemma 2 (2B) Edge Triage */}
+        {/* ------------------------------------------------------------- */}
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-blue-50/80 border border-indigo-200/90 shadow-sm space-y-4 print:hidden">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                  <Sparkles className="w-3 h-3 text-indigo-600" />
+                  Google AI Clinical Decision Copilot
+                </span>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Credit-Shield Protected ($0.00 Cache)
+                </span>
+              </div>
+              <h3 className="text-base font-bold text-ink font-display">
+                Multimodal Pre-Consultation Synthesis & Differential Analysis
+              </h3>
+              <p className="text-xs text-muted">
+                Synthesizes MediaPipe ocular gaze, vocal acoustics, and facial kinematics across geriatric and educational baselines.
+              </p>
+            </div>
+
+            {/* Model Switcher: Gemini 2.5 Flash (Cloud) vs Gemma 2 2B (Rural Edge) */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCopilotModel('gemini-2.5-flash');
+                    if (clinicalInsight) handleGenerateInsight('gemini-2.5-flash');
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    copilotModel === 'gemini-2.5-flash'
+                      ? 'bg-white text-indigo-700 shadow-sm'
+                      : 'text-slate-600 hover:text-ink'
+                  }`}
+                >
+                  Gemini 2.5 Flash (Cloud)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCopilotModel('gemma-2-2b');
+                    if (clinicalInsight) handleGenerateInsight('gemma-2-2b');
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    copilotModel === 'gemma-2-2b'
+                      ? 'bg-white text-teal-700 shadow-sm'
+                      : 'text-slate-600 hover:text-ink'
+                  }`}
+                >
+                  Google Gemma 2 (2B Rural Edge)
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleGenerateInsight(copilotModel)}
+                disabled={generatingInsight}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {generatingInsight ? 'Synthesizing...' : clinicalInsight ? 'Re-synthesize' : 'Generate Copilot Synthesis'}
+              </button>
+            </div>
+          </div>
+
+          {insightError && (
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">
+              {insightError}
+            </div>
+          )}
+
+          {clinicalInsight && (
+            <div className="space-y-4 pt-3 border-t border-indigo-100">
+              {/* Executive Summary */}
+              <div className="p-4 rounded-xl bg-white border border-indigo-100/80 shadow-sm">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-1">
+                  Executive Neurological Synthesis
+                </div>
+                <p className="text-xs text-slate-800 leading-relaxed font-medium">
+                  {clinicalInsight.executiveSummary}
+                </p>
+              </div>
+
+              {/* 4-Domain Breakdown */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-white border border-line space-y-1">
+                  <div className="font-bold text-indigo-700 flex items-center gap-1.5">
+                    <Eye className="w-3.5 h-3.5" /> Oculomotor Tracking (MediaPipe)
+                  </div>
+                  <p className="text-muted leading-relaxed">{clinicalInsight.domainFindings?.ocular}</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-line space-y-1">
+                  <div className="font-bold text-rose-700 flex items-center gap-1.5">
+                    <Mic className="w-3.5 h-3.5" /> Vocal Acoustics & Prosody (Google Speech)
+                  </div>
+                  <p className="text-muted leading-relaxed">{clinicalInsight.domainFindings?.vocal}</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-line space-y-1">
+                  <div className="font-bold text-teal-700 flex items-center gap-1.5">
+                    <Smile className="w-3.5 h-3.5" /> Facial Kinematics (MediaPipe 478 Mesh)
+                  </div>
+                  <p className="text-muted leading-relaxed">{clinicalInsight.domainFindings?.facial}</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-line space-y-1">
+                  <div className="font-bold text-amber-700 flex items-center gap-1.5">
+                    <Brain className="w-3.5 h-3.5" /> Executive Sequencing & Memory
+                  </div>
+                  <p className="text-muted leading-relaxed">{clinicalInsight.domainFindings?.executiveAndMemory}</p>
+                </div>
+              </div>
+
+              {/* Differential Considerations & Recommended Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-1.5">
+                  <span className="font-bold text-indigo-900 block uppercase tracking-wider text-[10px]">
+                    Differential Considerations
+                  </span>
+                  <ul className="space-y-1 list-disc list-inside text-slate-700">
+                    {clinicalInsight.differentialConsiderations?.map((item: string, idx: number) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100 space-y-1.5">
+                  <span className="font-bold text-emerald-900 block uppercase tracking-wider text-[10px]">
+                    Recommended Clinical Next Steps
+                  </span>
+                  <ul className="space-y-1 list-disc list-inside text-slate-700">
+                    {clinicalInsight.recommendedActions?.map((item: string, idx: number) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Footer Provenance Strip & Append Button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 text-[11px] text-muted">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-slate-700 font-mono">
+                    Model: {clinicalInsight.modelUsed || copilotModel}
+                  </span>
+                  <span>•</span>
+                  <span>Provider: {clinicalInsight.provider}</span>
+                  {clinicalInsight.cached && (
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      ⚡ 0ms Cached
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const formatted = `[${clinicalInsight.modelUsed || copilotModel} Synthesis]:\n${clinicalInsight.executiveSummary}\n\nDifferential Considerations:\n- ${clinicalInsight.differentialConsiderations?.join('\n- ')}\n\nRecommended Actions:\n- ${clinicalInsight.recommendedActions?.join('\n- ')}`;
+                    setDoctorNotes((curr) => [curr, formatted].filter(Boolean).join('\n\n'));
+                  }}
+                  className="font-bold text-indigo-700 hover:text-indigo-800 text-xs inline-flex items-center gap-1 self-start sm:self-auto"
+                >
+                  Append to Physician Notes →
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ------------------------------------------------------------- */}

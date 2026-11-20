@@ -77,15 +77,15 @@ export const AboutPage: React.FC = () => {
           <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Edge-computed MediaPipe Vision</span>
+              <span>Google MediaPipe Vision (On-Device 478 3D Mesh & Gaze)</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Real-time Web Audio Analysers</span>
+              <span>Google Gemini 2.5 Flash & Gemma 2 (2B) Clinical Copilot</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Multilingual voice synthesis & STT</span>
+              <span>Google Cloud Speech (Chirp 2) & Neural2 Indic TTS</span>
             </div>
           </div>
         </motion.div>

@@ -127,4 +127,75 @@ describe('Google Gemini Core AI Engine — Buildathon Strict Contracts', () => {
     assert.strictEqual(validatedEnglish.language, 'en');
     assert.ok(validatedEnglish.culturalStimuliContext.includes('Diya'));
   });
+
+  test('5. generateClinicalInsight synthesizes with Google Gemma 2 (2B) for offline rural PHC triage', async () => {
+    const { generateClinicalInsight } = await import('../services/geminiClinicalService');
+    const result = await generateClinicalInsight({
+      patient: {
+        patientId: 'PT-RURAL-001',
+        age: 71,
+        gender: 'FEMALE',
+        language: 'ta'
+      },
+      assessment: {
+        id: 'ASM-RURAL-789',
+        date: new Date().toISOString(),
+        score: 68,
+        classification: 'MILD_DIVERGENCE'
+      },
+      metrics: {
+        saccadicLatencyMs: 340,
+        fixationHoldScore: 78,
+        memoryMatchedPairs: 2,
+        speechRateWpm: 92,
+        pitchHz: 155,
+        facialSymmetryPct: 83,
+        trailBCompletionSec: 65,
+        sequencingErrors: 2
+      },
+      modelPreference: 'gemma-2-2b'
+    });
+
+    assert.ok(result.executiveSummary.length > 20);
+    assert.ok(result.modelUsed.includes('Gemma 2'));
+    assert.strictEqual(result.provider, 'google-gemma-local');
+    assert.ok(result.domainFindings.ocular.includes('340'));
+  });
+
+  test('6. generateClinicalInsight shields $5 credits via in-memory prompt cache', async () => {
+    const { generateClinicalInsight } = await import('../services/geminiClinicalService');
+    const req = {
+      patient: {
+        patientId: 'PT-CACHE-002',
+        age: 65,
+        gender: 'MALE',
+        language: 'hi'
+      },
+      assessment: {
+        id: 'ASM-CACHE-456',
+        date: new Date().toISOString(),
+        score: 84,
+        classification: 'OPTIMAL'
+      },
+      metrics: {
+        saccadicLatencyMs: 230,
+        fixationHoldScore: 92,
+        memoryMatchedPairs: 4,
+        speechRateWpm: 125,
+        pitchHz: 135,
+        facialSymmetryPct: 96,
+        trailBCompletionSec: 38,
+        sequencingErrors: 0
+      },
+      modelPreference: 'gemma-2-2b' as const
+    };
+
+    const run1 = await generateClinicalInsight(req);
+    assert.strictEqual(run1.cached, undefined);
+
+    // Second call with same inputs triggers instant credit-guard cache (0ms, $0.00 cost)
+    const run2 = await generateClinicalInsight(req);
+    assert.strictEqual(run2.cached, true);
+    assert.strictEqual(run2.executiveSummary, run1.executiveSummary);
+  });
 });

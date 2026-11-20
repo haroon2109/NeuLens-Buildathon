@@ -267,12 +267,13 @@ export const doctorApi = {
     return json.report;
   },
 
-  async getClinicalInsight(assessmentId: string) {
+  async getClinicalInsight(assessmentId: string, modelPreference: 'gemini-2.5-flash' | 'gemma-2-2b' = 'gemini-2.5-flash') {
     const json = await apiRequest(`/doctor/reports/${assessmentId}/clinical-insight`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body: JSON.stringify({ model: modelPreference }),
     });
     return json.insight;
   },

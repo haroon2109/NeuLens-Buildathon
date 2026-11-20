@@ -299,6 +299,7 @@ export class DoctorController {
       }
 
       const taskData = (reportData.assessment.taskResponses as Record<string, any>) || {};
+      const modelPreference = (req.body?.model as any) || (req.query?.model as any) || 'gemini-2.5-flash';
       const insight = await generateClinicalInsight({
         patient: {
           patientId: reportData.patient.patientId,
@@ -330,7 +331,8 @@ export class DoctorController {
           stressReported: taskData.context?.stressReported,
           familyHistory: (reportData.patient as any).familyHistory ? [(reportData.patient as any).familyHistory] : undefined,
           medications: (reportData.patient as any).currentMedications ? [(reportData.patient as any).currentMedications] : undefined,
-        }
+        },
+        modelPreference,
       });
 
       return res.status(200).json({
