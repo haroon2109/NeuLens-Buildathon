@@ -13,6 +13,7 @@ import { getAssessmentLanguageReadiness, recordLanguageSignOff } from '../servic
 import type { ReadinessStageKey } from '../services/assessmentLanguageReadiness';
 import { setSessionCookie, SESSION_MAX_AGE_MS } from '../services/sessionCookie';
 import { isDemoUserId } from '../services/demoRecords';
+import { generateClinicalInsight } from '../services/geminiClinicalService';
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS_PER_EMAIL = 10;
 const LOGIN_MAX_ATTEMPTS_PER_IP = 30;
@@ -274,6 +275,67 @@ export class DoctorController {
       return res.status(200).json({
         success: true,
         report: reportData
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * POST /api/v1/doctor/reports/:id/clinical-insight
+   * Generate Google Gemini 2.5 Clinical Decision Support Copilot synthesis.
+   */
+  public static async generateClinicalInsight(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.user || (req.user.role !== 'CLINICIAN' && req.user.role !== 'ADMIN')) {
+        return res.status(403).json({ error: 'Clinician access required' });
+      }
+
+      const { id } = req.params;
+      const reportData = await HospitalDataStore.getScreeningReport(id);
+
+      if (!reportData) {
+        return res.status(404).json({ error: 'Clinical screening report not found' });
+      }
+
+      const taskData = (reportData.assessment.taskResponses as Record<string, any>) || {};
+      const insight = await generateClinicalInsight({
+        patient: {
+          patientId: reportData.patient.patientId,
+          age: reportData.patient.age,
+          gender: reportData.patient.gender,
+          educationYears: reportData.patient.educationYears,
+          language: reportData.patient.language,
+        },
+        assessment: {
+          id: reportData.assessment.id,
+          date: reportData.assessment.date,
+          score: reportData.assessment.overallScore ?? 0,
+          classification: reportData.assessment.reviewState || 'COMPLETE',
+        },
+        metrics: {
+          saccadicLatencyMs: (reportData.assessment.eyeMetrics as any)?.saccadicLatencyMs ?? reportData.assessment.eyeMetrics?.reactionTime ?? taskData.task1?.saccadicLatencyMs,
+          fixationHoldScore: (reportData.assessment.eyeMetrics as any)?.fixationHoldScore ?? reportData.assessment.eyeMetrics?.fixationScore ?? taskData.task1?.fixationHoldScore,
+          memoryMatchedPairs: taskData.task2?.matchedPairs,
+          memoryMismatches: taskData.task2?.mismatches,
+          speechRateWpm: (reportData.assessment.voiceMetrics as any)?.speechRateWpm ?? reportData.assessment.voiceMetrics?.speechRate ?? taskData.task3?.speechRateWpm,
+          pitchHz: (reportData.assessment.voiceMetrics as any)?.pitchHz ?? taskData.task3?.meanPitchHz,
+          facialSymmetryPct: reportData.assessment.faceMetrics?.symmetry ? Math.round(reportData.assessment.faceMetrics.symmetry * 100) : taskData.task4?.facialSymmetryScore,
+          trailBCompletionSec: taskData.task5?.trailBCompletionSec,
+          sequencingErrors: taskData.task5?.sequencingErrors,
+        },
+        context: {
+          dailyFunctionChange: Boolean((reportData.assessment as any).dailyFunctionChange || taskData.dailyFunction),
+          sleepIssues: taskData.context?.sleepDisturbance,
+          stressReported: taskData.context?.stressReported,
+          familyHistory: (reportData.patient as any).familyHistory ? [(reportData.patient as any).familyHistory] : undefined,
+          medications: (reportData.patient as any).currentMedications ? [(reportData.patient as any).currentMedications] : undefined,
+        }
+      });
+
+      return res.status(200).json({
+        success: true,
+        insight
       });
     } catch (err) {
       next(err);

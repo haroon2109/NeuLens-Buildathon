@@ -6,6 +6,7 @@
 import { spawn } from 'child_process';
 import { GNANI_LANGUAGE_CATALOG, GnaniSttOptions, GnaniSttResult, SupportedLanguageCode } from './types';
 import { withGnaniQueue } from './gnaniQueue';
+import { googleSpeechService } from '../google/googleSpeech.service';
 
 export class GnaniSttService {
   private baseUrl: string;
@@ -25,7 +26,7 @@ export class GnaniSttService {
 
   public isConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.length > 0);
+    return Boolean((key && key.length > 0) || googleSpeechService.isConfigured());
   }
 
   /**
@@ -123,6 +124,23 @@ export class GnaniSttService {
         language: options.languageCode,
         requestId: undefined,
         latencyMs: Date.now() - startTime
+      };
+    }
+
+    // Prioritize Google Cloud Speech & Gemini 2.5 Flash Multimodal Audio (Chirp 2)
+    if (googleSpeechService.isConfigured()) {
+      const googleRes = await googleSpeechService.transcribe(audioBuffer, originalFilename, mimeType, {
+        languageCode: options.languageCode,
+        format: options.format,
+        itnNativeNumerals: options.itnNativeNumerals
+      });
+      return {
+        success: googleRes.success,
+        transcript: googleRes.transcript,
+        language: googleRes.language,
+        confidence: googleRes.confidence,
+        latencyMs: googleRes.latencyMs,
+        error: googleRes.error
       };
     }
 

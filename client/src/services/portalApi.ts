@@ -267,6 +267,16 @@ export const doctorApi = {
     return json.report;
   },
 
+  async getClinicalInsight(assessmentId: string) {
+    const json = await apiRequest(`/doctor/reports/${assessmentId}/clinical-insight`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return json.insight;
+  },
+
   async updateReportReview(assessmentId: string, reviewStatus: 'PENDING_REVIEW' | 'REVIEWED' | 'FOLLOWUP_REQUIRED', doctorNotes: string) {
     return apiRequest(`/doctor/reports/${assessmentId}/review`, {
       method: 'PATCH',

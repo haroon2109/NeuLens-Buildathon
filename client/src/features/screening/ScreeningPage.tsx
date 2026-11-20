@@ -665,12 +665,12 @@ export const ScreeningPage: React.FC<ScreeningPageProps> = ({ patientMode = fals
       if (stt.success && stt.transcript) {
         transcript = stt.transcript;
         setRecordedTranscript(transcript);
-        setVoiceLogs(prev => [...prev, `[Gnani Prisma STT]: Transcript received: "${transcript}"`]);
+        setVoiceLogs(prev => [...prev, `[Google AI Speech (Chirp 2 / Gemini)]: Transcript received: "${transcript}"`]);
       } else {
-        setVoiceLogs(prev => [...prev, '[Gnani Prisma STT]: No transcript available; word accuracy is left empty.']);
+        setVoiceLogs(prev => [...prev, '[Google AI Speech]: No transcript available; word accuracy is left empty.']);
       }
     } catch (err: any) {
-      setVoiceLogs(prev => [...prev, `[Gnani Prisma STT]: Unavailable (${err?.message || 'offline'}).`]);
+      setVoiceLogs(prev => [...prev, `[Google AI Speech]: Unavailable (${err?.message || 'offline'}).`]);
     }
 
     const analysis = await gnaniVoiceApi.analyzeAcoustics(blob, {
@@ -1816,8 +1816,8 @@ export const ScreeningPage: React.FC<ScreeningPageProps> = ({ patientMode = fals
                 <div className="p-4 bg-sky-50/80 border border-sky-200/90 rounded-2xl space-y-2 animate-fadeIn text-left">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-sky-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-                      Gnani Prisma v2.5 Transcript
+                      <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                      Google AI Speech-to-Text (Chirp 2 / Gemini Audio)
                     </span>
                     {isTranscribing && (
                       <span className="text-xs font-medium text-sky-600 animate-pulse">

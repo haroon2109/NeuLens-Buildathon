@@ -12,6 +12,7 @@ export type VoiceAction =
   | 'language-en'
   | 'language-ta'
   | 'language-hi'
+  | 'language-ar'
   | 'capabilities'
   | 'summary'
   | 'appointments'

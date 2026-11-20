@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
 import { gnaniSttService } from '../services/gnani/gnaniStt.service';
 import { gnaniTtsService } from '../services/gnani/gnaniTts.service';
 import { gnaniEvonService } from '../services/gnani/evon.service';
+import { googleSpeechService } from '../services/google/googleSpeech.service';
 import { GNANI_LANGUAGE_CATALOG, SupportedLanguageCode } from '../services/gnani/types';
 import { transcribeQuerySchema, synthesizeBodySchema, evonSummarySchema } from '../validation/voice.schemas';
 
@@ -191,10 +192,13 @@ export class VoiceController {
 
     const { language, format, itnNativeNumerals } = validation.data;
 
-    // Check configuration
-    if (!gnaniSttService.isConfigured()) {
+    // Check configuration across Google AI Speech (Gemini/Chirp) and Gnani
+    const isGoogleConfigured = googleSpeechService.isConfigured();
+    const isGnaniConfigured = gnaniSttService.isConfigured();
+
+    if (!isGoogleConfigured && !isGnaniConfigured) {
       return res.status(503).json({
-        error: 'Gnani STT service is not configured on the server (GNANI_API_KEY missing).',
+        error: 'Speech-to-text service is not configured (GEMINI_API_KEY or GNANI_API_KEY missing).',
         configured: false,
         transcript: '',
         fallbackAvailable: true
@@ -202,6 +206,32 @@ export class VoiceController {
     }
 
     try {
+      // Primary: Google Gemini 2.5 Flash Multimodal Audio / Google Cloud Speech (Chirp 2)
+      if (isGoogleConfigured) {
+        const result = await googleSpeechService.transcribe(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype,
+          {
+            languageCode: language,
+            format,
+            itnNativeNumerals
+          }
+        );
+
+        return res.status(200).json({
+          success: result.success,
+          transcript: result.transcript,
+          language: result.language,
+          confidence: result.confidence,
+          latencyMs: result.latencyMs,
+          provider: result.provider,
+          model: result.model,
+          ...(result.error ? { error: result.error } : {})
+        });
+      }
+
+      // Secondary: Gnani Prisma STT
       const result = await gnaniSttService.transcribe(
         req.file.buffer,
         req.file.originalname,
@@ -220,6 +250,7 @@ export class VoiceController {
         requestId: result.requestId,
         confidence: result.confidence,
         latencyMs: result.latencyMs,
+        provider: 'gnani-prisma-v2.5',
         ...(result.error ? { error: result.error } : {})
       });
     } catch (err: any) {

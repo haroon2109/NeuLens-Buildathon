@@ -4,8 +4,7 @@
   "description": "NeuLens - AI-Powered Neurocognitive Screening & Brain-Health Monitoring (Engineered by Google Antigravity)",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix server install && npm --prefix client install",
-    "install:all": "npm --prefix server install && npm --prefix client install",
+    "install:all": "npm --prefix server install --ignore-scripts && npm --prefix client install --ignore-scripts",
     "build:client": "npm --prefix client run build",
     "build:server": "npm --prefix server run build",
     "build": "npm run build:client && npm run build:server",

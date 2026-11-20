@@ -17,6 +17,7 @@ router.get('/dashboard', clinicianGuard, DoctorController.getDashboard);
 router.get('/patients', clinicianGuard, DoctorController.getPatients);
 router.get('/patients/:id', clinicianGuard, DoctorController.getPatientProfile);
 router.get('/reports/:id', clinicianGuard, DoctorController.getScreeningReport);
+router.post('/reports/:id/clinical-insight', clinicianGuard, DoctorController.generateClinicalInsight);
 router.get('/reports/:id/export', clinicianGuard, DoctorController.exportAssessment);
 router.patch('/reports/:id/review', clinicianGuard, DoctorController.updateReportReview);
 router.patch('/reports/:id/care-plan', clinicianGuard, DoctorController.saveCarePlan);

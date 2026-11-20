@@ -410,7 +410,7 @@ export const DoctorReportViewPage: React.FC = () => {
             <div className="bg-warm p-4 rounded-2xl border border-line/60 space-y-2">
               <div className="flex items-center gap-2 text-rose-700 font-bold text-xs">
                 <Mic className="w-4 h-4" />
-                Gnani AI Vocal Acoustics
+                Google AI Vocal Biomarkers (Chirp 2 / FFT Prosody)
               </div>
               <div className="text-xs space-y-1 text-body">
                 <div className="flex justify-between">
