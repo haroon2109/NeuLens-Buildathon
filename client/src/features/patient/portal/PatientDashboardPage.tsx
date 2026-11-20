@@ -93,7 +93,7 @@ export const PatientDashboardPage: React.FC = () => {
         actions={
           <Link
             to="/patient/assessment/intro"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-700 px-4 text-[14px] font-bold text-white transition hover:bg-blue-800"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest px-5 text-[14px] font-semibold text-white shadow-[0_10px_24px_-12px_rgba(27,51,43,0.5)] transition-all hover:bg-forest-deep hover:shadow-[0_14px_28px_-12px_rgba(27,51,43,0.65)] hover:-translate-y-0.5"
           >
             <Sparkles className="h-4 w-4" /> {copy.header.startAssessment}
           </Link>
@@ -101,8 +101,8 @@ export const PatientDashboardPage: React.FC = () => {
       />
 
       <MotionReveal>
-        <section className="pp-card overflow-hidden p-5 sm:p-6">
-          <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <section className="pp-card relative overflow-hidden rounded-[24px] border border-line bg-gradient-to-br from-white via-white to-mint/20 p-6 shadow-card transition-all hover:shadow-card-hover sm:p-7">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div className="max-w-2xl">
               <div className="flex flex-wrap items-center gap-2">
                 <Pill tone={baseline ? 'forest' : 'amber'} dot>
@@ -110,53 +110,53 @@ export const PatientDashboardPage: React.FC = () => {
                 </Pill>
                 {baseline && <Pill tone="sage">{copy.hero.established(formatDate(baseline.establishedAt))}</Pill>}
               </div>
-              <h2 className="mt-3 text-[21px] font-semibold tracking-[-0.03em] text-ink">
+              <h2 className="mt-3.5 text-[24px] font-semibold tracking-[-0.035em] text-ink sm:text-[28px]">
                 {latestAssessment ? copy.hero.latestTitle : copy.hero.firstTitle}
               </h2>
-              <p className="mt-1.5 text-[14px] leading-6 text-body">
+              <p className="mt-2 text-[14px] leading-relaxed text-body">
                 {latestAssessment
                   ? latestAssessment.reviewStatus === 'PENDING_REVIEW'
                     ? copy.hero.latestAwaiting(formatDate(latestAssessment.date))
                     : copy.hero.latestReviewed(formatDate(latestAssessment.date))
                   : copy.hero.firstBody}
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-5 flex flex-wrap gap-2.5">
                 <Link
                   to={latestAssessment ? '/patient/assessment/report' : '/patient/assessment/intro'}
-                  className="pp-btn pp-btn-primary pp-btn-sm"
+                  className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-[14px] font-semibold text-white shadow-pill transition-all hover:bg-forest-deep hover:shadow-pill-hover hover:-translate-y-0.5"
                 >
                   {latestAssessment ? copy.hero.readLatest : copy.hero.beginAssessment}
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
                 <Link
                   to="/patient/care-plan"
-                  className="pp-btn pp-btn-secondary pp-btn-sm"
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-[14px] font-semibold text-ink shadow-xs transition-all hover:bg-warm hover:border-line-strong hover:-translate-y-0.5"
                 >
                   {copy.hero.seeCarePlan}
                 </Link>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3.5">
               <HealthcareScene
                 kind="patientHome"
-                className="w-full max-w-[420px] lg:ml-auto"
+                className="w-full max-w-[420px] lg:ml-auto drop-shadow-sm"
                 title={copy.hero.sceneTitle}
                 animated={false}
               />
-              <div className="grid min-w-[250px] grid-cols-2 gap-2.5">
+              <div className="grid min-w-[250px] grid-cols-2 gap-3">
                 {[
                   { icon: Timer, label: copy.hero.duration, value: copy.hero.durationValue },
                   { icon: Stethoscope, label: copy.hero.careTeam, value: (user as any)?.assignedDoctor || treatmentTeam.doctor || copy.hero.careTeamFallback },
                   { icon: CalendarDays, label: copy.hero.nextVisit, value: nextAppointment ? formatDate(nextAppointment.date, { day: 'numeric', month: 'short' }) : copy.hero.notScheduled },
                   { icon: Activity, label: copy.hero.monitoring, value: monitoringStatus }
                 ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="rounded-xl border border-line bg-warm p-3">
-                    <span className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.08em] text-sage-deep">
+                  <div key={label} className="rounded-2xl border border-line bg-white/80 p-3.5 backdrop-blur-xs shadow-xs transition-all hover:border-line-strong hover:bg-white">
+                    <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-sage-deep">
                       <Icon className="h-3.5 w-3.5 text-sage-deep" aria-hidden="true" />
                       {label}
                     </span>
-                    <p className="mt-1.5 text-[15px] font-semibold text-ink">{value}</p>
+                    <p className="mt-1 text-[15px] font-semibold text-ink truncate">{value}</p>
                   </div>
                 ))}
               </div>

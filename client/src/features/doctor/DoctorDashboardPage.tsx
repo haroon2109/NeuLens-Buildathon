@@ -58,27 +58,27 @@ export const DoctorDashboardPage: React.FC = () => {
     switch (state?.toUpperCase()) {
       case 'REVIEW_PROMPT':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
             Review prompt
           </span>
         );
       case 'NOT_INTERPRETABLE':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-warm text-body border border-line">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-warm text-body border border-line">
             Not interpretable
           </span>
         );
       case 'CLINICIAN_REVIEWED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-mint text-forest border border-forest/20 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-forest"></span>
             Clinician reviewed
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-warm text-sage-deep border border-line">
             Not reviewed
           </span>
         );
@@ -89,21 +89,21 @@ export const DoctorDashboardPage: React.FC = () => {
     switch (status?.toUpperCase()) {
       case 'FOLLOWUP_REQUIRED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">
             Follow-up Req.
           </span>
         );
       case 'REVIEWED':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-warm text-body border border-line">
-            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-mint text-forest border border-forest/20">
+            <CheckCircle2 className="w-3.5 h-3.5 text-forest" />
             Reviewed
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            <Clock className="w-3 h-3 text-blue-500" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <Clock className="w-3.5 h-3.5 text-amber-600" />
             Pending Review
           </span>
         );
@@ -129,63 +129,65 @@ export const DoctorDashboardPage: React.FC = () => {
       {/* ---------------------------------------------------------------- */}
       {/* TOP CLINICAL HEADER                                              */}
       {/* ---------------------------------------------------------------- */}
-      <MotionReveal><div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] items-stretch bg-white p-6 rounded-2xl border border-line shadow-card">
-        <div className="flex flex-col justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-mint-haze text-forest border 0 flex items-center gap-1">
-                <Stethoscope className="w-3 h-3" />
-                Department of Neurology
-              </span>
-              <span className="text-xs text-muted">| Clinical screening & longitudinal review</span>
+      <MotionReveal>
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] items-stretch bg-gradient-to-br from-white via-white to-mint/20 p-6 sm:p-7 rounded-[24px] border border-line shadow-card">
+          <div className="flex flex-col justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-mint text-forest border border-forest/20 flex items-center gap-1.5 shadow-xs">
+                  <Stethoscope className="w-3.5 h-3.5 text-forest" />
+                  Department of Neurology
+                </span>
+                <span className="text-xs text-muted">Clinical screening &amp; longitudinal review</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-ink font-display tracking-[-0.035em]">
+                Physician Overview Dashboard
+              </h1>
+              <p className="text-xs sm:text-sm text-body mt-1 leading-relaxed">
+                Review queue, flagged changes, patient intake, and longitudinal brain-health observations for clinician-led follow-up.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-ink font-display">
-              Physician Overview Dashboard
-            </h1>
-            <p className="text-xs sm:text-sm text-muted mt-0.5">
-              Review queue, flagged changes, patient intake, and longitudinal brain-health observations for clinician-led follow-up.
-            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={fetchStats}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-line bg-white hover:bg-warm text-body text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Data
+              </button>
+              <Link to="/doctor/review-queue" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest hover:bg-forest-deep text-white text-xs font-semibold shadow-pill transition-all hover:shadow-pill-hover hover:-translate-y-0.5">
+                <ClipboardCheck className="w-4 h-4" /> Clinical Review Queue
+              </Link>
+              <Link to="/doctor/change-detection" className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-amber-200 bg-amber-50/70 hover:bg-amber-100/70 text-amber-900 text-xs font-semibold transition-all shadow-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-600" /> Flagged changes
+              </Link>
+              <Link to="/doctor/patients" className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-line bg-white hover:bg-warm text-body text-xs font-semibold transition-all shadow-xs">
+                <Users className="w-4 h-4" /> Patient Directory
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={fetchStats}
-              disabled={loading}
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-warm hover:bg-slate-200 text-body text-xs font-bold transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </button>
-            <Link to="/doctor/review-queue" className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-forest hover:bg-forest-deep text-white text-xs font-bold shadow-card transition-all">
-              <ClipboardCheck className="w-4 h-4" /> Clinical Review Queue
-            </Link>
-            <Link to="/doctor/change-detection" className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-line bg-white hover:bg-warm text-body text-xs font-bold transition-all">
-              <AlertTriangle className="w-4 h-4 text-amber-600" /> Flagged changes
-            </Link>
-            <Link to="/doctor/patients" className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-line bg-white hover:bg-warm text-body text-xs font-bold transition-all">
-              <Users className="w-4 h-4" /> Patient Directory
-            </Link>
-          </div>
+          <HealthcareScene kind="doctorDashboard" className="w-full h-full min-h-[190px] drop-shadow-xs" title="Doctor reviewing brain-health reports" />
         </div>
-        <HealthcareScene kind="doctorDashboard" className="w-full h-full min-h-[180px]" title="Doctor reviewing brain-health reports" />
-      </div></MotionReveal>
+      </MotionReveal>
 
       {/* ---------------------------------------------------------------- */}
       {/* 4 CORE KPI CARDS                                                 */}
       {/* ---------------------------------------------------------------- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total Patients */}
-        <div className="bg-white p-5 rounded-2xl border border-line shadow-card hover:border-line-strong transition-all flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[20px] border border-line shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-muted uppercase tracking-[0.12em]">
+            <span className="text-[11px] font-bold text-sage-deep uppercase tracking-[0.12em]">
               Enrolled Patients
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-mint text-forest flex items-center justify-center">
               <Users className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-semibold text-ink font-display">
+            <div className="text-3xl font-semibold text-ink font-display tracking-tight">
               {stats?.totalPatients ?? '—'}
             </div>
             <div className="text-xs text-muted mt-1 flex items-center gap-1 font-medium">
@@ -195,17 +197,17 @@ export const DoctorDashboardPage: React.FC = () => {
         </div>
 
         {/* Card 2: Screenings Today */}
-        <div className="bg-white p-5 rounded-2xl border border-line shadow-card hover:border-line-strong transition-all flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[20px] border border-line shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-muted uppercase tracking-[0.12em]">
+            <span className="text-[11px] font-bold text-sage-deep uppercase tracking-[0.12em]">
               Screenings Today
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-forest/10 text-forest flex items-center justify-center">
               <Activity className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-semibold text-ink font-display">
+            <div className="text-3xl font-semibold text-ink font-display tracking-tight">
               {stats?.assessmentsToday ?? '—'}
             </div>
             <div className="text-xs text-muted mt-1 flex items-center gap-1 font-medium">
@@ -215,17 +217,17 @@ export const DoctorDashboardPage: React.FC = () => {
         </div>
 
         {/* Card 3: Completed Total */}
-        <div className="bg-white p-5 rounded-2xl border border-line shadow-card hover:border-line-strong transition-all flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[20px] border border-line shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-muted uppercase tracking-[0.12em]">
+            <span className="text-[11px] font-bold text-sage-deep uppercase tracking-[0.12em]">
               Total Assessments
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-medical-50 text-medical-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-sage-deep/15 text-forest flex items-center justify-center">
               <ClipboardCheck className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-semibold text-ink font-display">
+            <div className="text-3xl font-semibold text-ink font-display tracking-tight">
               {stats?.completedAssessments ?? '—'}
             </div>
             <div className="text-xs text-muted mt-1 flex items-center gap-1 font-medium">
@@ -235,20 +237,20 @@ export const DoctorDashboardPage: React.FC = () => {
         </div>
 
         {/* Card 4: Pending Review */}
-        <div className="bg-white p-5 rounded-2xl border border-line shadow-card hover:border-line-strong transition-all flex flex-col justify-between">
+        <div className="bg-white p-5 rounded-[20px] border border-line shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-bold text-muted uppercase tracking-[0.12em]">
+            <span className="text-[11px] font-bold text-sage-deep uppercase tracking-[0.12em]">
               Pending Reviews
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center">
               <Clock className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-semibold text-amber-600 font-display">
+            <div className="text-3xl font-semibold text-amber-700 font-display tracking-tight">
               {stats?.pendingReviews ?? '—'}
             </div>
-            <div className="text-xs text-amber-700/80 mt-1 flex items-center gap-1 font-medium">
+            <div className="text-xs text-amber-800/80 mt-1 flex items-center gap-1 font-medium">
               <span>Awaiting clinician verification</span>
             </div>
           </div>
@@ -256,13 +258,13 @@ export const DoctorDashboardPage: React.FC = () => {
 
       </div>
 
-      <section className="bg-white rounded-2xl border border-line shadow-card overflow-hidden">
+      <section className="bg-white rounded-[24px] border border-line shadow-card overflow-hidden">
         <div className="p-6 border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-medical-600" />
-              <h2 className="text-lg font-bold text-ink font-display">Longitudinal change cues</h2>
-              <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+              <Activity className="w-4 h-4 text-forest" />
+              <h2 className="text-lg font-semibold text-ink font-display tracking-[-0.02em]">Longitudinal change cues</h2>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
                 {stats?.changeReviewCount ?? '—'} to review
               </span>
             </div>
@@ -270,8 +272,8 @@ export const DoctorDashboardPage: React.FC = () => {
               A score below an observed comparable baseline, newly reported daily-activity difficulty, or worsening context prompts clinician review, not diagnosis.
             </p>
           </div>
-          <Link to="/doctor/patients" className="text-xs font-bold text-medical-700 hover:text-medical-900">
-            View patient records <ChevronRight className="w-3.5 h-3.5 inline" />
+          <Link to="/doctor/patients" className="text-xs font-bold text-forest hover:text-forest-deep flex items-center gap-1">
+            View patient records <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -280,11 +282,11 @@ export const DoctorDashboardPage: React.FC = () => {
         ) : (stats?.changeReviewQueue.length || 0) > 0 ? (
           <ul className="divide-y divide-line">
             {stats?.changeReviewQueue.slice(0, 5).map((cue) => (
-              <li key={cue.patientId} className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <li key={cue.patientId} className="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-warm/40 transition-colors">
                 <div>
                   <Link
                     to={`/doctor/patients/${cue.patientId}`}
-                    className="font-bold text-sm text-ink hover:text-medical-700"
+                    className="font-bold text-sm text-ink hover:text-forest"
                   >
                     {cue.patientName}
                   </Link>
@@ -315,7 +317,7 @@ export const DoctorDashboardPage: React.FC = () => {
                   )}
                   <Link
                     to={`/doctor/patients/${cue.patientId}`}
-                    className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-medical-50 text-medical-700 hover:bg-medical-100 text-xs font-bold"
+                    className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-mint text-forest hover:bg-mint/80 text-xs font-semibold transition-all shadow-xs"
                   >
                     Review change <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
@@ -333,39 +335,39 @@ export const DoctorDashboardPage: React.FC = () => {
       {/* ---------------------------------------------------------------- */}
       {/* HOSPITAL AI PROTOCOL BANNER                                      */}
       {/* ---------------------------------------------------------------- */}
-      <div className="bg-gradient-to-r from-medical-900 via-slate-900 to-blue-950 p-6 rounded-2xl text-white shadow-elevated flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-slate-800">
+      <div className="bg-gradient-to-r from-[#173026] via-[#1a382d] to-[#0f2119] p-6 sm:p-7 rounded-[24px] text-white shadow-elevated flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-forest/30">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white/20 text-white flex items-center gap-1">
-              <Sparkles className="w-3 h-3 0" />
-              Neulens v2.5 Protocol
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/15 text-white flex items-center gap-1 border border-white/20">
+              <Sparkles className="w-3 h-3 text-emerald-300" />
+              NeuLens v2.5 Protocol
             </span>
-            <span className="text-xs text-slate-300">Biometric & Speech Pipeline Active</span>
+            <span className="text-xs text-white/70">Biometric &amp; Speech Pipeline Active</span>
           </div>
-          <h3 className="text-lg font-bold font-display text-white">
+          <h3 className="text-lg font-semibold font-display text-white tracking-[-0.02em]">
             Hospital Dual-Portal Architecture Active
           </h3>
-          <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+          <p className="text-xs text-white/80 max-w-2xl leading-relaxed">
             Patient portal strictly sanitizes all risk stratifications and diagnostic scores. Doctors retain sole authority to view composite domain scores, review raw eye/voice telemetry, and sign off official reports.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2 text-xs font-mono">
-          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
+        <div className="flex flex-wrap gap-2 text-xs">
+          <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Google AI Speech: Chirp 2 & Neural2
+            Google AI Speech
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-            MediaPipe Gaze & Face
+          <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
+            <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
+            MediaPipe Gaze &amp; Face
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+          <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
+            <span className="w-2 h-2 rounded-full bg-teal-300"></span>
             Gemini 2.5 Flash Copilot
           </div>
-          <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-teal-400"></span>
-            Google Gemma 2 (2B) Rural Edge
+          <div className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15 flex items-center gap-2 text-white/90">
+            <span className="w-2 h-2 rounded-full bg-mint"></span>
+            Gemini Live Vernacular
           </div>
         </div>
       </div>
@@ -373,12 +375,12 @@ export const DoctorDashboardPage: React.FC = () => {
       {/* ---------------------------------------------------------------- */}
       {/* RECENT CLINICAL ASSESSMENTS QUEUE TABLE                          */}
       {/* ---------------------------------------------------------------- */}
-      <div className="bg-white rounded-2xl border border-line shadow-card overflow-hidden">
+      <div className="bg-white rounded-[24px] border border-line shadow-card overflow-hidden">
         
         {/* Table Toolbar */}
         <div className="p-6 border-b border-line flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-ink font-display">
+            <h2 className="text-lg font-semibold text-ink font-display tracking-[-0.02em]">
               Clinical Assessment Triage Queue
             </h2>
             <p className="text-xs text-muted">
@@ -395,7 +397,7 @@ export const DoctorDashboardPage: React.FC = () => {
                 placeholder="Search patient name or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl text-xs bg-warm border border-line focus:outline-none focus:ring-2 focus:ring-medical-500/20 focus:border-medical-500 font-medium"
+                className="w-full pl-9 pr-4 py-2 rounded-full text-xs bg-warm/80 border border-line focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest font-medium text-ink transition"
               />
             </div>
 
