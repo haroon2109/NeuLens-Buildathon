@@ -7,6 +7,7 @@
  * same as no authentication at all.
  */
 const MIN_SECRET_LENGTH = 32;
+const DEV_FALLBACK_SECRET = 'neulens-dev-jwt-secret-key-for-local-demo-screening-32ch';
 
 let warnedAboutWeakSecret = false;
 
@@ -30,7 +31,7 @@ export function getJwtSecret(): string {
         'JWT_SECRET is not configured. Refusing to issue or accept session tokens in production.'
       );
     }
-    return ''; // development only; never reach this in production
+    return DEV_FALLBACK_SECRET; // development only fallback so local check-in/login always works
   }
 
   if (configured.length < MIN_SECRET_LENGTH) {
