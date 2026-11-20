@@ -318,7 +318,7 @@ export const PatientLanguagePage: React.FC = () => {
       <footer className="text-center text-xs text-muted mt-8">
         {t
           ? t.footer
-          : 'Spoken voice guidance is powered by high-fidelity Gnani Timbre speech synthesis in your chosen regional language.'}
+          : 'Spoken voice guidance is powered by Google Cloud Text-to-Speech (Neural2 / Journey) in your chosen regional language.'}
       </footer>
 
     </div>

@@ -12,6 +12,7 @@ import { GnaniSttService } from '../services/gnani/gnaniStt.service';
 import { GnaniTtsService } from '../services/gnani/gnaniTts.service';
 import { GnaniEvonService } from '../services/gnani/evon.service';
 import { GNANI_LANGUAGE_CATALOG } from '../services/gnani/types';
+import { googleTtsService } from '../services/google/googleTts.service';
 import { voiceController } from '../controllers/voice.controller';
 
 // Mock Express Response helper
@@ -84,8 +85,60 @@ describe('Gnani AI Voice Integration Test Suite', () => {
       await voiceController.getHealth(req, res);
       assert.strictEqual(res.statusCode, 200);
       assert.ok('configured' in res.body);
-      assert.ok(res.body.stt.model.includes('Prisma'));
-      assert.ok(res.body.tts.model.includes('Timbre'));
+      assert.ok(res.body.stt.model.includes('Prisma') || res.body.stt.model.includes('Google'));
+      assert.ok(res.body.tts.model.includes('Timbre') || res.body.tts.model.includes('Google'));
+    });
+  });
+
+  describe('2. Google Cloud Text-to-Speech (Neural2 / Journey Indic Voices)', () => {
+    it('resolves correct Neural2 and Journey voices for Indic languages and Arabic', () => {
+      const ta = googleTtsService.resolveVoice('ta');
+      assert.strictEqual(ta.bcp47, 'ta-IN');
+      assert.strictEqual(ta.voiceName, 'ta-IN-Neural2-A');
+      assert.strictEqual(ta.modelType, 'google-cloud-neural2');
+
+      const hi = googleTtsService.resolveVoice('hi');
+      assert.strictEqual(hi.bcp47, 'hi-IN');
+      assert.strictEqual(hi.voiceName, 'hi-IN-Neural2-A');
+
+      const en = googleTtsService.resolveVoice('en');
+      assert.strictEqual(en.bcp47, 'en-IN');
+      assert.strictEqual(en.voiceName, 'en-IN-Journey-F');
+      assert.strictEqual(en.modelType, 'google-cloud-journey');
+
+      const ar = googleTtsService.resolveVoice('ar');
+      assert.strictEqual(ar.bcp47, 'ar-XA');
+      assert.strictEqual(ar.voiceName, 'ar-XA-Neural2-A');
+    });
+
+    it('rejects empty synthesis text with descriptive error', async () => {
+      await assert.rejects(
+        async () => googleTtsService.synthesize({ text: '  ', language: 'ta' }),
+        { message: 'Synthesis text cannot be empty.' }
+      );
+    });
+
+    it('produces resilient deterministic fallback audio when offline/unconfigured and caches hit', async () => {
+      googleTtsService.clearCache();
+      const res1 = await googleTtsService.synthesize({
+        text: 'தயவுசெய்து திரையில் உள்ள வட்டத்தை தொடவும்.',
+        language: 'ta',
+        speed: 0.95
+      });
+
+      assert.ok(res1.audioBuffer.length > 0);
+      assert.strictEqual(res1.language, 'ta-IN');
+      assert.strictEqual(res1.cached, false);
+
+      // Second synthesis of identical clinical instruction -> instant cache hit
+      const res2 = await googleTtsService.synthesize({
+        text: 'தயவுசெய்து திரையில் உள்ள வட்டத்தை தொடவும்.',
+        language: 'ta',
+        speed: 0.95
+      });
+
+      assert.strictEqual(res2.cached, true);
+      assert.strictEqual(res2.audioBuffer.length, res1.audioBuffer.length);
     });
   });
 

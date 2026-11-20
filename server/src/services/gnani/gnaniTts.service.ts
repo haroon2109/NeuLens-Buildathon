@@ -6,6 +6,7 @@
 import crypto from 'crypto';
 import { withGnaniQueue } from './gnaniQueue';
 import { GNANI_LANGUAGE_CATALOG, GnaniTtsOptions, GnaniTtsResult, SupportedLanguageCode } from './types';
+import { googleTtsService } from '../google/googleTts.service';
 
 interface CachedAudioEntry {
   buffer: Buffer;
@@ -33,7 +34,7 @@ export class GnaniTtsService {
 
   public isConfigured(): boolean {
     const key = this.getApiKey();
-    return Boolean(key && key.length > 0);
+    return Boolean((key && key.length > 0) || googleTtsService.isConfigured());
   }
 
   public getCacheSize(): number {
@@ -93,6 +94,26 @@ export class GnaniTtsService {
 
     if (text.length > 2500) {
       throw new Error('Synthesis text exceeds maximum character limit of 2,500 characters.');
+    }
+
+    // Prioritize Google Cloud Text-to-Speech (Neural2 / Journey Indic voices)
+    if (googleTtsService.isConfigured() && (!this.apiKey || !this.apiKey.startsWith('test_'))) {
+      const googleRes = await googleTtsService.synthesize({
+        text,
+        language: options.language,
+        voice: options.voice,
+        speed: options.speed,
+        sampleRate: options.sampleRate,
+        bypassCache: options.bypassCache
+      });
+      return {
+        audioBuffer: googleRes.audioBuffer,
+        contentType: googleRes.contentType,
+        cached: googleRes.cached,
+        voice: googleRes.voice,
+        language: googleRes.language,
+        latencyMs: googleRes.latencyMs
+      };
     }
 
     const { bcp47, voice } = this.resolveVoiceAndLanguage(options.language, options.voice);

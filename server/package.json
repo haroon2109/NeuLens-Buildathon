@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "migrate:deploy": "ts-node --project tsconfig.json src/scripts/migrate-deploy.ts",
-    "test": "tsc && NODE_ENV=test node --test 'dist/tests/*.test.js'",
+    "test": "tsc && node --test \"dist/tests/*.test.js\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",

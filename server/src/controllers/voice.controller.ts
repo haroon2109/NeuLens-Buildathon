@@ -8,6 +8,7 @@ import { gnaniSttService } from '../services/gnani/gnaniStt.service';
 import { gnaniTtsService } from '../services/gnani/gnaniTts.service';
 import { gnaniEvonService } from '../services/gnani/evon.service';
 import { googleSpeechService } from '../services/google/googleSpeech.service';
+import { googleTtsService } from '../services/google/googleTts.service';
 import { GNANI_LANGUAGE_CATALOG, SupportedLanguageCode } from '../services/gnani/types';
 import { transcribeQuerySchema, synthesizeBodySchema, evonSummarySchema } from '../validation/voice.schemas';
 
@@ -99,25 +100,29 @@ export class VoiceController {
    * Does NOT consume paid credits or expose credentials.
    */
   public async getHealth(req: Request, res: Response) {
-    const configured = gnaniSttService.isConfigured() && gnaniTtsService.isConfigured();
+    const isGoogleActive = googleSpeechService.isConfigured() || googleTtsService.isConfigured();
+    const isGnaniActive = gnaniSttService.isConfigured() && gnaniTtsService.isConfigured();
+    const configured = isGoogleActive || isGnaniActive;
     const evonStatus = gnaniEvonService.getStatus();
 
     return res.status(200).json({
       status: configured ? 'ok' : 'degraded',
       configured,
-      message: configured
-        ? 'Gnani AI speech engines active (Prisma STT v2.5 / Timbre TTS v2.5)'
-        : 'Gnani AI API key not configured. Backend will return safe fallbacks.',
+      message: isGoogleActive
+        ? 'Google Cloud Speech & Text-to-Speech active (Chirp 2 / Gemini Audio STT & Neural2 / Journey TTS)'
+        : configured
+          ? 'Gnani AI speech engines active (Prisma STT v2.5 / Timbre TTS v2.5)'
+          : 'Speech API credentials not configured. Backend will return safe fallbacks.',
       stt: {
-        model: 'Prisma v2.5 (v3 REST)',
+        model: googleSpeechService.isConfigured() ? 'Google Gemini 2.5 Flash Audio / Cloud Speech Chirp 2' : 'Prisma v2.5 (v3 REST)',
         endpoint: '/api/v1/voice/transcribe',
-        supportedLanguages: Object.keys(GNANI_LANGUAGE_CATALOG)
+        supportedLanguages: ['en', 'ta', 'hi', 'te', 'kn', 'ml', 'ar']
       },
       tts: {
-        model: 'Timbre v2.5',
+        model: googleTtsService.isConfigured() ? 'Google Cloud Text-to-Speech (Neural2 / Journey)' : 'Timbre v2.5',
         endpoint: '/api/v1/voice/synthesize',
-        supportedLanguages: Object.keys(GNANI_LANGUAGE_CATALOG),
-        cacheEntries: gnaniTtsService.getCacheSize()
+        supportedLanguages: ['en', 'ta', 'hi', 'te', 'kn', 'ml', 'ar'],
+        cacheEntries: googleTtsService.getCacheSize() || gnaniTtsService.getCacheSize()
       },
       evon: evonStatus,
       quota: getDailyBudgetState()
@@ -385,15 +390,42 @@ export class VoiceController {
 
     const { text, language, voice, speed, sampleRate, bypassCache } = validation.data;
 
-    if (!gnaniTtsService.isConfigured()) {
+    const isGoogleConfigured = googleTtsService.isConfigured();
+    const isGnaniConfigured = gnaniTtsService.isConfigured();
+
+    if (!isGoogleConfigured && !isGnaniConfigured) {
       return res.status(503).json({
-        error: 'Gnani TTS service is not configured on the server (GNANI_API_KEY missing).',
+        error: 'Text-to-speech service is not configured on the server (GEMINI_API_KEY or GNANI_API_KEY missing).',
         configured: false,
         fallbackRecommended: true
       });
     }
 
     try {
+      // Prioritize Google Cloud Text-to-Speech (Neural2 / Journey)
+      if (isGoogleConfigured) {
+        const result = await googleTtsService.synthesize({
+          text,
+          language,
+          voice,
+          speed,
+          sampleRate,
+          bypassCache
+        });
+
+        res.setHeader('Content-Type', result.contentType || 'audio/mpeg');
+        res.setHeader('Content-Length', result.audioBuffer.length);
+        res.setHeader('X-TTS-Voice', result.voice);
+        res.setHeader('X-TTS-Language', result.language);
+        res.setHeader('X-TTS-Model', result.model);
+        res.setHeader('X-TTS-Provider', result.provider);
+        res.setHeader('X-TTS-Cached', result.cached ? 'true' : 'false');
+        res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
+
+        return res.status(200).send(result.audioBuffer);
+      }
+
+      // Secondary fallback to Gnani Timbre
       const result = await gnaniTtsService.synthesize({
         text,
         language,

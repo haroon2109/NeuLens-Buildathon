@@ -353,7 +353,7 @@ export const DoctorDashboardPage: React.FC = () => {
         <div className="flex flex-wrap gap-2 text-xs font-mono">
           <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Gnani Speech: Timbre & Prisma
+            Google AI Speech: Chirp 2 & Neural2
           </div>
           <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-blue-400"></span>
