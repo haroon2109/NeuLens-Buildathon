@@ -10,7 +10,7 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
-import { getGeminiConfig } from '../geminiService';
+import { GeminiKeyPool, getGeminiConfig } from '../geminiService';
 import { error as logError, info as logInfo } from '../logger';
 
 export interface GoogleSttOptions {
@@ -183,6 +183,8 @@ Strict instructions:
         provider: 'google-gemini-2.5-flash'
       };
     } catch (err: any) {
+      GeminiKeyPool.getInstance().markFailed(config.apiKey, err?.message);
+      this.genAiClient = null;
       logError('Google Gemini STT failed, attempting Google Cloud Speech Chirp 2 fallback', { error: err.message });
 
       // Secondary Google Cloud Speech REST fallback (Chirp 2)

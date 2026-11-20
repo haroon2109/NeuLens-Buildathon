@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { getLlmConfig } from './assistantLlm';
+import { GeminiKeyPool } from './geminiService';
 
 export interface ClinicalInsightRequest {
   patient: {
@@ -257,59 +258,68 @@ REQUIRED INSTRUCTIONS:
   ]
 }`;
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
+      const pool = GeminiKeyPool.getInstance();
+      const result = await pool.executeWithFailover(async (activeKey) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
-      const res = await fetch(`${config.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${config.apiKey}`
-        },
-        body: JSON.stringify({
-          model: config.model || 'gemini-2.5-flash',
-          temperature: 0.2,
-          response_format: { type: 'json_object' },
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an expert clinical neurologist AI copilot. Provide structured, evidence-grounded decision support JSON. Never invent unmeasured numbers.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ]
-        }),
-        signal: controller.signal
-      });
+        const res = await fetch(`${config.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${activeKey}`
+          },
+          body: JSON.stringify({
+            model: config.model || 'gemini-2.5-flash',
+            temperature: 0.2,
+            response_format: { type: 'json_object' },
+            messages: [
+              {
+                role: 'system',
+                content: 'You are an expert clinical neurologist AI copilot. Provide structured, evidence-grounded decision support JSON. Never invent unmeasured numbers.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ]
+          }),
+          signal: controller.signal
+        });
 
-      clearTimeout(timeout);
+        clearTimeout(timeout);
 
-      if (res.ok) {
+        if (!res.ok) {
+          throw new Error(`Gemini upstream error: HTTP ${res.status}`);
+        }
+
         const payload = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
         const content = payload.choices?.[0]?.message?.content?.trim();
-        if (content) {
-          const parsed = JSON.parse(content);
-          const result: ClinicalInsightResponse = {
-            executiveSummary: parsed.executiveSummary || 'Multimodal screening data processed.',
-            domainFindings: parsed.domainFindings || {
-              ocular: 'Ocular observations recorded.',
-              vocal: 'Acoustic prosody recorded.',
-              facial: 'Facial landmarks tracked.',
-              executiveAndMemory: 'Executive and memory tasks recorded.'
-            },
-            differentialConsiderations: parsed.differentialConsiderations || ['Correlate with formal clinical cognitive instrument.'],
-            recommendedActions: parsed.recommendedActions || ['Review findings with the patient in upcoming consultation.'],
-            modelUsed: config.model || 'gemini-2.5-flash',
-            provider: 'google-gemini',
-            generatedAt: new Date().toISOString()
-          };
-
-          // Store in credit-guard cache
-          clinicalInsightCache.set(cacheKey, { data: result, timestamp: Date.now() });
-          return result;
+        if (!content) {
+          throw new Error('Empty response from Gemini');
         }
+
+        const parsed = JSON.parse(content);
+        return {
+          executiveSummary: parsed.executiveSummary || 'Multimodal screening data processed.',
+          domainFindings: parsed.domainFindings || {
+            ocular: 'Ocular observations recorded.',
+            vocal: 'Acoustic prosody recorded.',
+            facial: 'Facial landmarks tracked.',
+            executiveAndMemory: 'Executive and memory tasks recorded.'
+          },
+          differentialConsiderations: parsed.differentialConsiderations || ['Correlate with formal clinical cognitive instrument.'],
+          recommendedActions: parsed.recommendedActions || ['Review findings with the patient in upcoming consultation.'],
+          modelUsed: config.model || 'gemini-2.5-flash',
+          provider: 'google-gemini' as const,
+          generatedAt: new Date().toISOString()
+        };
+      });
+
+      if (result) {
+        // Store in credit-guard cache
+        clinicalInsightCache.set(cacheKey, { data: result, timestamp: Date.now() });
+        return result;
       }
     } catch (err) {
       console.warn('[GeminiClinicalService]: Gemini API failed, falling back to Google Gemma 2B edge synthesis:', err);

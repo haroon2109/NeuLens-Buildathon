@@ -18,7 +18,7 @@
  */
 
 import crypto from 'crypto';
-import { getGeminiConfig } from '../geminiService';
+import { GeminiKeyPool, getGeminiConfig } from '../geminiService';
 import { error as logError, info as logInfo } from '../logger';
 
 export interface GoogleTtsOptions {
@@ -292,6 +292,7 @@ export class GoogleTtsService {
       clearTimeout(timeout);
 
       if (!response.ok) {
+        GeminiKeyPool.getInstance().markFailed(apiKey, `HTTP ${response.status}`);
         const errorText = await response.text().catch(() => '');
         throw new Error(`Google Cloud TTS error (${response.status}): ${errorText.slice(0, 250)}`);
       }

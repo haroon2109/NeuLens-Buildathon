@@ -198,4 +198,49 @@ describe('Google Gemini Core AI Engine — Buildathon Strict Contracts', () => {
     assert.strictEqual(run2.cached, true);
     assert.strictEqual(run2.executiveSummary, run1.executiveSummary);
   });
+
+  test('7. GeminiKeyPool seamlessly fails over between personal and collaborator keys on 429 quota limits', async () => {
+    const { GeminiKeyPool } = await import('../services/geminiService');
+    const pool = GeminiKeyPool.getInstance();
+
+    const origPrimary = process.env.GEMINI_API_KEY;
+    const origCollab = process.env.COLLABORATOR_GEMINI_API_KEY;
+
+    try {
+      process.env.GEMINI_API_KEY = 'test_primary_key_abc123';
+      process.env.COLLABORATOR_GEMINI_API_KEY = 'test_collab_key_xyz789';
+
+      const keys = pool.refreshKeys();
+      assert.ok(keys.includes('test_primary_key_abc123'));
+      assert.ok(keys.includes('test_collab_key_xyz789'));
+
+      // Simulate primary key failing with 429 Rate Limit
+      const key1 = pool.getActiveKey();
+      assert.strictEqual(key1, 'test_primary_key_abc123');
+
+      // Failover occurs
+      const key2 = pool.markFailed(key1, '429 Quota Exceeded');
+      assert.strictEqual(key2, 'test_collab_key_xyz789');
+
+      // Subsequent retrieval uses the healthy collaborator key
+      assert.strictEqual(pool.getActiveKey(), 'test_collab_key_xyz789');
+
+      // Test automatic failover wrapper
+      let attemptCount = 0;
+      const result = await pool.executeWithFailover(async (activeKey) => {
+        attemptCount++;
+        if (activeKey === 'test_primary_key_abc123') {
+          throw new Error('429 RESOURCE_EXHAUSTED: Quota exceeded for project');
+        }
+        return `SUCCESS_WITH_${activeKey}`;
+      });
+
+      assert.strictEqual(result, 'SUCCESS_WITH_test_collab_key_xyz789');
+      assert.strictEqual(attemptCount, 1); // was already rotated to collaborator key!
+    } finally {
+      process.env.GEMINI_API_KEY = origPrimary;
+      process.env.COLLABORATOR_GEMINI_API_KEY = origCollab;
+      pool.refreshKeys();
+    }
+  });
 });

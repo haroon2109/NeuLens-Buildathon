@@ -24,25 +24,170 @@ export interface GeminiConfig {
   isConfigured: boolean;
 }
 
+/**
+ * Gemini Multi-Key Failover Pool
+ * Supports seamless failover between personal and collaborator API keys.
+ * If one key encounters HTTP 429 (rate/quota limits) or auth errors, it automatically
+ * marks that key in cooldown and routes subsequent and retried calls to the next key.
+ */
+export class GeminiKeyPool {
+  private static instance: GeminiKeyPool;
+  private keys: string[] = [];
+  private activeIndex: number = 0;
+  private failedKeys: Map<string, number> = new Map(); // key -> cooldown expiry
+  private readonly cooldownMs = 60000; // 60s cooldown on failure
+
+  private constructor() {
+    this.refreshKeys();
+  }
+
+  public static getInstance(): GeminiKeyPool {
+    if (!GeminiKeyPool.instance) {
+      GeminiKeyPool.instance = new GeminiKeyPool();
+    }
+    return GeminiKeyPool.instance;
+  }
+
+  public refreshKeys(): string[] {
+    const rawKeys: string[] = [];
+
+    // 1. Check GEMINI_API_KEYS / GOOGLE_API_KEYS (comma or semicolon separated pool)
+    const poolVar = process.env.GEMINI_API_KEYS || process.env.GOOGLE_API_KEYS;
+    if (poolVar) {
+      rawKeys.push(...poolVar.split(/[,;\n]+/).map((k) => k.trim()));
+    }
+
+    // 2. Check primary keys
+    if (process.env.GEMINI_API_KEY) rawKeys.push(process.env.GEMINI_API_KEY.trim());
+    if (process.env.GOOGLE_API_KEY) rawKeys.push(process.env.GOOGLE_API_KEY.trim());
+
+    // 3. Check collaborator and backup keys
+    if (process.env.COLLABORATOR_GEMINI_API_KEY) rawKeys.push(process.env.COLLABORATOR_GEMINI_API_KEY.trim());
+    if (process.env.COLLABORATOR_API_KEY) rawKeys.push(process.env.COLLABORATOR_API_KEY.trim());
+    if (process.env.GEMINI_BACKUP_API_KEY) rawKeys.push(process.env.GEMINI_BACKUP_API_KEY.trim());
+    if (process.env.GOOGLE_BACKUP_API_KEY) rawKeys.push(process.env.GOOGLE_BACKUP_API_KEY.trim());
+
+    // Deduplicate & clean quotes
+    const cleaned = Array.from(
+      new Set(
+        rawKeys
+          .map((k) => k.replace(/^["']|["']$/g, '').trim())
+          .filter((k) => k.length > 0)
+      )
+    );
+
+    this.keys = cleaned;
+    return this.keys;
+  }
+
+  public isConfigured(): boolean {
+    this.refreshKeys();
+    return this.keys.length > 0;
+  }
+
+  public getAllKeys(): string[] {
+    this.refreshKeys();
+    return [...this.keys];
+  }
+
+  public getActiveKey(): string {
+    this.refreshKeys();
+    if (this.keys.length === 0) return '';
+
+    const now = Date.now();
+    for (let i = 0; i < this.keys.length; i++) {
+      const idx = (this.activeIndex + i) % this.keys.length;
+      const key = this.keys[idx];
+      const expiry = this.failedKeys.get(key) || 0;
+      if (now > expiry) {
+        this.activeIndex = idx;
+        return key;
+      }
+    }
+
+    // If all are in cooldown, reset cooldown and return active key
+    this.failedKeys.clear();
+    return this.keys[this.activeIndex % this.keys.length];
+  }
+
+  public markFailed(failedKey: string, reason?: string): string {
+    this.refreshKeys();
+    if (this.keys.length <= 1) return this.getActiveKey();
+
+    const now = Date.now();
+    this.failedKeys.set(failedKey, now + this.cooldownMs);
+    const masked = failedKey.length > 8 ? `***${failedKey.slice(-6)}` : '***';
+    logWarn(`[GeminiKeyPool]: API Key [${masked}] failed (${reason || 'quota/error'}). Failing over to next key in pool.`);
+
+    this.activeIndex = (this.activeIndex + 1) % this.keys.length;
+    return this.getActiveKey();
+  }
+
+  /**
+   * Executes an asynchronous operation with automatic key failover.
+   * If a key throws HTTP 429 (rate/quota limits) or 401/403 auth errors,
+   * it fails over to collaborator/backup keys and retries before giving up.
+   */
+  public async executeWithFailover<T>(operation: (apiKey: string) => Promise<T>): Promise<T> {
+    this.refreshKeys();
+    const attempts = Math.max(1, this.keys.length);
+
+    if (this.keys.length === 0) {
+      return operation('');
+    }
+
+    let lastError: any = null;
+
+    for (let i = 0; i < attempts; i++) {
+      const apiKey = this.getActiveKey();
+      try {
+        return await operation(apiKey);
+      } catch (err: any) {
+        lastError = err;
+        const msg = String(err?.message || err);
+        const isQuotaOrAuth =
+          msg.includes('429') ||
+          msg.includes('401') ||
+          msg.includes('403') ||
+          msg.includes('RESOURCE_EXHAUSTED') ||
+          msg.includes('quota') ||
+          msg.includes('API_KEY_INVALID');
+
+        if (isQuotaOrAuth && this.keys.length > 1) {
+          this.markFailed(apiKey, isQuotaOrAuth ? 'Rate limit / Quota (429)' : 'Authentication failure');
+          continue;
+        }
+
+        throw err;
+      }
+    }
+
+    throw lastError;
+  }
+}
+
 export function getGeminiConfig(): GeminiConfig {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+  const pool = GeminiKeyPool.getInstance();
+  const apiKey = pool.getActiveKey();
   const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
   return {
     apiKey,
     model,
-    isConfigured: Boolean(apiKey && apiKey.trim().length > 0)
+    isConfigured: pool.isConfigured()
   };
 }
 
-let genAiClient: GoogleGenAI | null = null;
+const clientCache = new Map<string, GoogleGenAI>();
 
-function getClient(): GoogleGenAI | null {
-  const config = getGeminiConfig();
-  if (!config.isConfigured) return null;
-  if (!genAiClient) {
-    genAiClient = new GoogleGenAI({ apiKey: config.apiKey });
+function getClient(overrideKey?: string): GoogleGenAI | null {
+  const pool = GeminiKeyPool.getInstance();
+  const key = overrideKey || pool.getActiveKey();
+  if (!key) return null;
+
+  if (!clientCache.has(key)) {
+    clientCache.set(key, new GoogleGenAI({ apiKey: key }));
   }
-  return genAiClient;
+  return clientCache.get(key)!;
 }
 
 // ============================================================================
