@@ -1,0 +1,116 @@
+# Google Cloud Build Pipeline for NeuLens (Google Startup Buildathon India 2026)
+# Region: asia-south1 (Mumbai) / asia-south2 (Delhi)
+
+steps:
+  # --------------------------------------------------------------------------
+  # 1. Build and Test Server Microservice
+  # --------------------------------------------------------------------------
+  - name: 'node:20-slim'
+    id: 'test-server'
+    dir: 'server'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm ci
+        npm run build
+        NODE_ENV=test node --test 'dist/tests/assessmentScoring.test.js' 'dist/tests/interpretability.test.js'
+
+  # --------------------------------------------------------------------------
+  # 2. Build Client Web Application (Vite + Google MediaPipe)
+  # --------------------------------------------------------------------------
+  - name: 'node:20-slim'
+    id: 'build-client'
+    dir: 'client'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm ci
+        npm run build
+
+  # --------------------------------------------------------------------------
+  # 3. Build Container Images using Google Cloud Build
+  # --------------------------------------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-server-image'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-server:$COMMIT_SHA'
+      - '-t'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-server:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-ai-image'
+    dir: 'ai-service'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-ai:$COMMIT_SHA'
+      - '-t'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-ai:latest'
+      - '.'
+
+  # --------------------------------------------------------------------------
+  # 4. Push Container Images to Google Artifact Registry
+  # --------------------------------------------------------------------------
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-server-image'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-server'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-ai-image'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-ai'
+
+  # --------------------------------------------------------------------------
+  # 5. Deploy to Google Cloud Run
+  # --------------------------------------------------------------------------
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-ai-service'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'neulens-ai'
+      - '--image=asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-ai:latest'
+      - '--region=asia-south1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=ENVIRONMENT=production,GEMINI_MODEL=gemini-2.5-flash'
+      - '--cpu=1'
+      - '--memory=1Gi'
+      - '--min-instances=0'
+      - '--max-instances=5'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-server'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'neulens-server'
+      - '--image=asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-server:latest'
+      - '--region=asia-south1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=NODE_ENV=production,GEMINI_MODEL=gemini-2.5-flash'
+      - '--cpu=1'
+      - '--memory=1Gi'
+      - '--min-instances=0'
+      - '--max-instances=10'
+
+images:
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-server:latest'
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/neulens-repo/neulens-ai:latest'
+
+timeout: '1200s'
+options:
+  logging: CLOUD_LOGGING_ONLY

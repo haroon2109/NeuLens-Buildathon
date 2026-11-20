@@ -1,0 +1,197 @@
+/* ─── NeuLens palette — the single source of truth ──────────────────────────
+   Every colour the product renders is defined here, once. Nothing else in the
+   codebase may declare a palette hex.
+
+   Values are stored as bare RGB triples so that both consumers can use them:
+
+     CSS      color: rgb(var(--nl-forest-rgb));
+     Tailwind rgb(var(--nl-forest-rgb) / <alpha-value>)   →  bg-forest/40 works
+
+   The three CSS files that used to own their own copies alias these names:
+   portalDesignSystem.css (--pp-*) and features/landing/landingStyles.css
+   (--lp-*). tailwind.config.js resolves its colour scales from the same vars.
+
+   Contrast: the ratios below are measured against #FFFFFF. Tones marked
+   "text only" are safe for type on light surfaces; the two tinted tones at the
+   bottom are decoration only — never text, and never a background carrying
+   white text, because they measure 1.82:1 and 2.70:1 respectively.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Brand ramp ───────────────────────────────────────────────────────── */
+  --nl-forest-rgb: 47 94 78; /* #2F5E4E · 7.42:1 · 6.77:1 vs warm */
+  --nl-forest-deep-rgb: 36 73 61; /* #24493D */
+  --nl-forest-500-rgb: 94 139 118; /* #5E8B76 */
+  --nl-forest-900-rgb: 29 59 49; /* #1D3B31 */
+  --nl-forest-950-rgb: 20 42 35; /* #142A23 */
+
+  --nl-sage-rgb: 169 199 182; /* #A9C7B6 · 1.82:1 · DECORATION ONLY */
+  --nl-sage-dark-rgb: 127 166 146; /* #7FA692 · 2.70:1 · DECORATION ONLY */
+  --nl-sage-deep-rgb: 70 113 94; /* #46715E · 5.55:1 · labels, eyebrows */
+
+  --nl-mint-rgb: 223 243 234; /* #DFF3EA · tinted surface */
+  --nl-mint-soft-rgb: 238 248 243; /* #EEF8F3 */
+  --nl-mint-200-rgb: 196 228 213; /* #C4E4D5 */
+
+  /* Secondary green family kept for charts and legacy scales. */
+  --nl-tint-50-rgb: 241 248 244; /* #F1F8F4 */
+  --nl-tint-100-rgb: 229 241 234; /* #E5F1EA */
+  --nl-tint-200-rgb: 200 226 213; /* #C8E2D5 */
+  --nl-tint-300-rgb: 170 206 187; /* #AACEBB */
+  --nl-tint-400-rgb: 130 175 153; /* #82AF99 */
+  --nl-tint-500-rgb: 95 144 121; /* #5F9079 */
+
+  /* ── Warm neutrals ────────────────────────────────────────────────────── */
+  --nl-warm-rgb: 251 247 239; /* #FBF7EF · page background */
+  --nl-sand-50-rgb: 250 248 243; /* #FAF8F3 */
+  --nl-sand-100-rgb: 242 240 233; /* #F2F0E9 */
+  --nl-sand-400-rgb: 166 180 171; /* #A6B4AB */
+  --nl-sand-700-rgb: 60 79 71; /* #3C4F47 */
+  --nl-sand-800-rgb: 42 61 53; /* #2A3D35 */
+  --nl-ink-950-rgb: 19 37 32; /* #132520 */
+
+  /* ── Text and hairlines ───────────────────────────────────────────────── */
+  --nl-ink-rgb: 27 51 43; /* #1B332B · 6.77:1 vs white */
+  --nl-body-rgb: 78 95 88; /* #4E5F58 · 6.34:1 vs warm */
+  --nl-muted-rgb: 99 113 107; /* #63716B · 4.79:1 vs warm */
+  --nl-line-rgb: 226 231 223; /* #E2E7DF */
+  --nl-line-strong-rgb: 207 216 206; /* #CFD8CE */
+  --nl-surface-rgb: 255 255 255; /* #FFFFFF */
+
+  /* ── Semantic status ──────────────────────────────────────────────────── */
+  --nl-success-rgb: 5 150 105; /* #059669 */
+  --nl-success-light-rgb: 209 250 229; /* #D1FAE5 */
+  --nl-warning-rgb: 217 119 6; /* #D97706 */
+  --nl-warning-light-rgb: 254 243 199; /* #FEF3C7 */
+  --nl-error-rgb: 220 38 38; /* #DC2626 */
+  --nl-error-light-rgb: 254 226 226; /* #FEE2E2 */
+  --nl-rose-rgb: 180 35 50; /* #B42332 · form validation copy */
+  --nl-teal-rgb: 13 148 136; /* #0D9488 */
+  --nl-teal-light-rgb: 153 246 228; /* #99F6E4 */
+
+  /* ── Isolated accents ─────────────────────────────────────────────────────
+     Single-purpose tints used by one or two components (role-selection rings,
+     an illustration chip). They are declared here so no component has to spell
+     out a hex, but they are not part of the core brand ramp. */
+  --nl-mint-haze-rgb: 234 244 239; /* #EAF4EF */
+  --nl-mint-veil-rgb: 233 245 241; /* #E9F5F1 */
+  --nl-mist-rgb: 244 251 248; /* #F4FBF8 */
+  --nl-clay-rgb: 245 239 230; /* #F5EFE6 */
+  --nl-clay-deep-rgb: 160 108 66; /* #A06C42 */
+
+  /* ── Status surfaces ──────────────────────────────────────────────────────
+     Banner and form-state backgrounds. Hand-rolled in the older portal styles;
+     named here so those stylesheets stop spelling out their own tints. */
+  --nl-success-text-rgb: 22 107 71; /* #166B47 · 6.04:1 vs white */
+  --nl-success-border-rgb: 200 236 217; /* #C8ECD9 */
+  --nl-success-surface-rgb: 243 252 247; /* #F3FCF7 */
+  --nl-warning-text-rgb: 122 82 36; /* #7A5224 · 7.29:1 vs white */
+  --nl-warning-border-rgb: 240 223 190; /* #F0DFBE */
+  --nl-warning-surface-rgb: 255 250 241; /* #FFFAF1 */
+  --nl-error-deep-rgb: 154 29 42; /* #9A1D2A */
+  --nl-error-border-rgb: 254 202 202; /* #FECACA */
+  --nl-error-surface-rgb: 255 247 247; /* #FFF7F7 */
+  --nl-scrim-rgb: 14 29 25; /* #0E1D19 · overlay behind sheets */
+  --nl-placeholder-rgb: 102 115 109; /* #66736D · input placeholders */
+
+  /* ── Legacy neutrals ──────────────────────────────────────────────────────
+     Drift from screens built before the palette existed. Kept as tokens so no
+     stylesheet declares a hex, but they are candidates to collapse onto the
+     ramp above during the next UI pass. */
+  --nl-legacy-cream-rgb: 251 249 244; /* #FBF9F4 */
+  --nl-legacy-sand-rgb: 247 245 239; /* #F7F5EF */
+  --nl-legacy-sand-deep-rgb: 246 244 238; /* #F6F4EE */
+  --nl-legacy-mist-rgb: 236 238 230; /* #ECEEE6 */
+  --nl-legacy-grey-rgb: 141 156 148; /* #8D9C94 */
+  --nl-legacy-grey-deep-rgb: 122 139 131; /* #7A8B83 */
+  --nl-legacy-amber-rgb: 253 240 213; /* #FDF0D5 */
+  --nl-legacy-amber-text-rgb: 138 106 63; /* #8A6A3F */
+  --nl-legacy-blue-rgb: 90 142 235; /* #5A8EEB */
+  --nl-legacy-green-rgb: 45 122 91; /* #2D7A5B */
+
+  /* ── Semantic aliases used by the stylesheets ─────────────────────────── */
+  --nl-navy: rgb(var(--nl-ink-rgb));
+  --nl-blue: rgb(var(--nl-forest-rgb));
+  --nl-blue-hover: rgb(var(--nl-forest-deep-rgb));
+  --nl-blue-light: rgb(var(--nl-mint-rgb));
+  --nl-text-primary: rgb(var(--nl-ink-rgb));
+  --nl-text-secondary: rgb(var(--nl-body-rgb));
+  --nl-text-muted: rgb(var(--nl-muted-rgb));
+  --nl-bg: rgb(var(--nl-warm-rgb));
+  --nl-surface: rgb(var(--nl-surface-rgb));
+  --nl-border: rgb(var(--nl-line-rgb));
+  --nl-border-strong: rgb(var(--nl-line-strong-rgb));
+  --nl-success: rgb(var(--nl-success-rgb));
+  --nl-warning: rgb(var(--nl-warning-rgb));
+  --nl-error: rgb(var(--nl-error-rgb));
+  --nl-forest: rgb(var(--nl-forest-rgb));
+  --nl-forest-deep: rgb(var(--nl-forest-deep-rgb));
+  --nl-sage: rgb(var(--nl-sage-rgb));
+  --nl-sage-dark: rgb(var(--nl-sage-dark-rgb));
+  --nl-sage-deep: rgb(var(--nl-sage-deep-rgb));
+  --nl-mint: rgb(var(--nl-mint-rgb));
+  --nl-mint-soft: rgb(var(--nl-mint-soft-rgb));
+  --nl-warm: rgb(var(--nl-warm-rgb));
+  --nl-ink: rgb(var(--nl-ink-rgb));
+  --nl-body: rgb(var(--nl-body-rgb));
+  --nl-muted: rgb(var(--nl-muted-rgb));
+  --nl-line: rgb(var(--nl-line-rgb));
+  --nl-line-strong: rgb(var(--nl-line-strong-rgb));
+  --nl-white: rgb(var(--nl-surface-rgb));
+  --nl-mint-haze: rgb(var(--nl-mint-haze-rgb));
+  --nl-mint-veil: rgb(var(--nl-mint-veil-rgb));
+  --nl-mist: rgb(var(--nl-mist-rgb));
+  --nl-clay: rgb(var(--nl-clay-rgb));
+  --nl-clay-deep: rgb(var(--nl-clay-deep-rgb));
+
+  /* Ramp steps that stylesheets address directly. */
+  --nl-forest-500: rgb(var(--nl-forest-500-rgb));
+  --nl-forest-900: rgb(var(--nl-forest-900-rgb));
+  --nl-forest-950: rgb(var(--nl-forest-950-rgb));
+  --nl-mint-200: rgb(var(--nl-mint-200-rgb));
+  --nl-tint-50: rgb(var(--nl-tint-50-rgb));
+  --nl-tint-100: rgb(var(--nl-tint-100-rgb));
+  --nl-tint-200: rgb(var(--nl-tint-200-rgb));
+  --nl-tint-300: rgb(var(--nl-tint-300-rgb));
+  --nl-tint-400: rgb(var(--nl-tint-400-rgb));
+  --nl-tint-500: rgb(var(--nl-tint-500-rgb));
+  --nl-sand-50: rgb(var(--nl-sand-50-rgb));
+  --nl-sand-100: rgb(var(--nl-sand-100-rgb));
+  --nl-sand-400: rgb(var(--nl-sand-400-rgb));
+  --nl-sand-700: rgb(var(--nl-sand-700-rgb));
+  --nl-sand-800: rgb(var(--nl-sand-800-rgb));
+  --nl-ink-950: rgb(var(--nl-ink-950-rgb));
+  --nl-rose: rgb(var(--nl-rose-rgb));
+  --nl-teal: rgb(var(--nl-teal-rgb));
+  --nl-teal-light: rgb(var(--nl-teal-light-rgb));
+  --nl-success-light: rgb(var(--nl-success-light-rgb));
+  --nl-success-text: rgb(var(--nl-success-text-rgb));
+  --nl-success-border: rgb(var(--nl-success-border-rgb));
+  --nl-success-surface: rgb(var(--nl-success-surface-rgb));
+  --nl-warning-text: rgb(var(--nl-warning-text-rgb));
+  --nl-warning-border: rgb(var(--nl-warning-border-rgb));
+  --nl-warning-surface: rgb(var(--nl-warning-surface-rgb));
+  --nl-error-deep: rgb(var(--nl-error-deep-rgb));
+  --nl-error-border: rgb(var(--nl-error-border-rgb));
+  --nl-error-surface: rgb(var(--nl-error-surface-rgb));
+  --nl-scrim: rgb(var(--nl-scrim-rgb));
+  --nl-placeholder: rgb(var(--nl-placeholder-rgb));
+  --nl-legacy-cream: rgb(var(--nl-legacy-cream-rgb));
+  --nl-legacy-sand: rgb(var(--nl-legacy-sand-rgb));
+  --nl-legacy-sand-deep: rgb(var(--nl-legacy-sand-deep-rgb));
+  --nl-legacy-mist: rgb(var(--nl-legacy-mist-rgb));
+  --nl-legacy-grey: rgb(var(--nl-legacy-grey-rgb));
+  --nl-legacy-grey-deep: rgb(var(--nl-legacy-grey-deep-rgb));
+  --nl-legacy-amber: rgb(var(--nl-legacy-amber-rgb));
+  --nl-legacy-amber-text: rgb(var(--nl-legacy-amber-text-rgb));
+  --nl-legacy-blue: rgb(var(--nl-legacy-blue-rgb));
+  --nl-legacy-green: rgb(var(--nl-legacy-green-rgb));
+  --nl-warning-light: rgb(var(--nl-warning-light-rgb));
+  --nl-error-light: rgb(var(--nl-error-light-rgb));
+
+  /* ── Type ─────────────────────────────────────────────────────────────── */
+  --nl-font-sans: 'Manrope', 'Noto Naskh Arabic', 'Noto Sans Arabic',
+    'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Telugu',
+    'Noto Sans Kannada', 'Noto Sans Malayalam', system-ui, -apple-system,
+    'Segoe UI', Roboto, sans-serif;
+}

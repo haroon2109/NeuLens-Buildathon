@@ -1,0 +1,1146 @@
+/* ─── NeuLens Portal Design System ────────────────────────────────────────────
+   One visual identity for every screen behind the landing page.
+   Patient portal and doctor portal share the same palette, type scale,
+   surface language and control shapes as the public site — so the whole
+   product reads as one NeuLens experience, not a beautiful landing page
+   followed by generic dashboards.
+
+   Palette (mirrors landing page):
+     forest  — primary action, headings-on-dark        var(--nl-forest)
+     forest-deep — hover / darker variant              var(--nl-forest-deep)
+     sage           — secondary ink, eyebrows          var(--nl-sage)
+     sage-dark      — deeper sage                      var(--nl-sage-dark)
+     sage-deep      — strongest sage, icon tint        var(--nl-sage-deep)
+     mint           — tinted surface                   var(--nl-mint)
+     warm           — page background                  var(--nl-warm)
+     white          — card surface                     var(--nl-white)
+     ink            — deep charcoal text               var(--nl-ink)
+     body           — secondary text                   var(--nl-body)
+     muted          — tertiary text                    var(--nl-muted)
+     line           — default border                   var(--nl-line)
+     line-strong    — stronger border                  var(--nl-line-strong)
+
+   Type scale (Manrope only, same as landing page):
+     pp-display  — hero heading
+     pp-h2       — section heading
+     pp-h3       — card heading
+     pp-h4       — control / chip heading
+     pp-lead     — intro paragraph
+     pp-body     — body
+     pp-small    — secondary body
+     pp-caption  — eyebrow / label, uppercase tracked
+
+   Surfaces & controls reuse the landing page language:
+     pp-card     — white card with soft shadow, 1.5rem radius
+     pp-panel    — warm surface panel, 1.75rem radius
+     pp-btn      — shared button base
+     pp-btn-primary
+     pp-btn-secondary
+     pp-btn-ghost
+     pp-tag      — inline pill
+     pp-input    — form field
+     pp-eyebrow  — section label
+*/
+
+:root {
+  /* Palette aliases only: the values live in tokens.css. These names exist so
+     the pp-* component classes below stay readable. */
+  --pp-forest: var(--nl-forest);
+  --pp-forest-deep: var(--nl-forest-deep);
+  --pp-sage: var(--nl-sage);
+  --pp-sage-dark: var(--nl-sage-dark);
+  --pp-sage-deep: var(--nl-sage-deep);
+  --pp-mint: var(--nl-mint);
+  --pp-warm: var(--nl-warm);
+  --pp-white: var(--nl-white);
+  --pp-ink: var(--nl-ink);
+  --pp-body: var(--nl-body);
+  --pp-muted: var(--nl-muted);
+  --pp-line: var(--nl-line);
+  --pp-line-strong: var(--nl-line-strong);
+
+  --pp-radius-sm: 0.65rem;
+  --pp-radius: 0.85rem;
+  --pp-radius-lg: 1.25rem;
+  --pp-radius-xl: 1.5rem;
+  --pp-radius-2xl: 1.75rem;
+
+  --pp-shadow-card: 0 1px 2px rgba(27, 51, 43, 0.03), 0 24px 60px -58px rgba(27, 51, 43, 0.45);
+  --pp-shadow-card-hover: 0 1px 2px rgba(27, 51, 43, 0.04), 0 32px 70px -56px rgba(27, 51, 43, 0.55);
+  --pp-shadow-pill: 0 10px 24px -16px rgba(36, 73, 61, 0.7);
+  --pp-shadow-pill-hover: 0 14px 28px -16px rgba(36, 73, 61, 0.72);
+  --pp-shadow-elevated: 0 24px 70px -48px rgba(27, 51, 43, 0.28), 0 2px 8px rgba(27, 51, 43, 0.035);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+.patient-portal ::-webkit-scrollbar,
+.doctor-portal ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.patient-portal ::-webkit-scrollbar-track,
+.doctor-portal ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.patient-portal ::-webkit-scrollbar-thumb,
+.doctor-portal ::-webkit-scrollbar-thumb {
+  background: var(--pp-line-strong);
+  border-radius: 999px;
+}
+.patient-portal ::-webkit-scrollbar-thumb:hover,
+.doctor-portal ::-webkit-scrollbar-thumb:hover {
+  background: var(--pp-sage-dark);
+}
+
+/* ── Base typography for portal pages ──────────────────────────────────────── */
+.patient-portal,
+.doctor-portal {
+  font-family: var(--nl-font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.patient-portal h1,
+.patient-portal h2,
+.patient-portal h3,
+.patient-portal h4,
+.patient-portal h5,
+.patient-portal h6,
+.patient-portal p,
+.patient-portal li,
+.patient-portal td,
+.patient-portal th,
+.patient-portal caption,
+.patient-portal span,
+.patient-portal a,
+.patient-portal button,
+.patient-portal input,
+.patient-portal select,
+.patient-portal textarea {
+  font-family: var(--nl-font-sans);
+}
+
+.patient-portal em,
+.patient-portal i {
+  font-style: normal;
+}
+
+.doctor-portal h1,
+.doctor-portal h2,
+.doctor-portal h3,
+.doctor-portal h4,
+.doctor-portal h5,
+.doctor-portal h6,
+.doctor-portal p,
+.doctor-portal li,
+.doctor-portal td,
+.doctor-portal th,
+.doctor-portal caption,
+.doctor-portal span,
+.doctor-portal a,
+.doctor-portal button,
+.doctor-portal input,
+.doctor-portal select,
+.doctor-portal textarea {
+  font-family: var(--nl-font-sans);
+}
+
+.doctor-portal em,
+.doctor-portal i {
+  font-style: normal;
+}
+
+/* ── Type scale ─────────────────────────────────────────────────────────────── */
+.patient-portal .pp-display,
+.doctor-portal .pp-display {
+  font-size: clamp(2.4rem, 1.4rem + 4vw, 4.2rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.05em;
+  color: var(--pp-ink);
+  text-wrap: balance;
+}
+
+.patient-portal .pp-h2,
+.doctor-portal .pp-h2 {
+  font-size: clamp(1.85rem, 1.2rem + 2.5vw, 2.9rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.042em;
+  color: var(--pp-ink);
+  text-wrap: balance;
+}
+
+.patient-portal .pp-h3,
+.doctor-portal .pp-h3 {
+  font-size: clamp(1.15rem, 1.02rem + 0.5vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.026em;
+  color: var(--pp-ink);
+  text-wrap: balance;
+}
+
+.patient-portal .pp-h4,
+.doctor-portal .pp-h4 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  color: var(--pp-ink);
+}
+
+.patient-portal .pp-lead,
+.doctor-portal .pp-lead {
+  font-size: clamp(1.05rem, 1rem + 0.28vw, 1.2rem);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--pp-body);
+  text-wrap: pretty;
+}
+
+.patient-portal .pp-body,
+.doctor-portal .pp-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--pp-body);
+  text-wrap: pretty;
+}
+
+.patient-portal .pp-small,
+.doctor-portal .pp-small {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--pp-body);
+  text-wrap: pretty;
+}
+
+.patient-portal .pp-caption,
+.doctor-portal .pp-caption {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pp-sage-deep);
+}
+
+.patient-portal .pp-eyebrow,
+.doctor-portal .pp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pp-sage-deep);
+}
+
+.patient-portal .pp-eyebrow::before,
+.doctor-portal .pp-eyebrow::before {
+  width: 1.75rem;
+  height: 1px;
+  flex: none;
+  background-color: var(--pp-sage-dark);
+  content: "";
+}
+
+.patient-portal .pp-caption-ink,
+.doctor-portal .pp-caption-ink {
+  color: var(--pp-ink);
+  font-weight: 700;
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────────────── */
+.patient-portal .pp-card,
+.doctor-portal .pp-card {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-xl);
+  background-color: var(--pp-white);
+  box-shadow: var(--pp-shadow-card);
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.patient-portal .pp-card:hover,
+.doctor-portal .pp-card:hover {
+  border-color: var(--pp-line-strong);
+  box-shadow: var(--pp-shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+.patient-portal .pp-card-deep,
+.doctor-portal .pp-card-deep {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-2xl);
+  background-color: var(--pp-white);
+  box-shadow: var(--pp-shadow-elevated);
+}
+
+.patient-portal .pp-panel,
+.doctor-portal .pp-panel {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-2xl);
+  background-color: var(--pp-warm);
+}
+
+.patient-portal .pp-panel-deep,
+.doctor-portal .pp-panel-deep {
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-2xl);
+  background-color: var(--pp-warm);
+  box-shadow: var(--pp-shadow-card);
+}
+
+/* Soft mint tinted surface (teaser / highlight strip) */
+.patient-portal .pp-mint-soft,
+.doctor-portal .pp-mint-soft {
+  background-color: var(--pp-mint);
+}
+
+.patient-portal .pp-forest-soft,
+.doctor-portal .pp-forest-soft {
+  background-color: var(--pp-forest);
+  color: white;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
+.patient-portal .pp-btn,
+.doctor-portal .pp-btn {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--pp-radius);
+  font-family: var(--nl-font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.patient-portal .pp-btn-sm,
+.doctor-portal .pp-btn-sm {
+  /* 2.8rem keeps the small size above the 44px touch target. */
+  min-height: 2.8rem;
+  padding: 0.6rem 1.05rem;
+  font-size: 0.875rem;
+}
+
+.patient-portal .pp-btn-lg,
+.doctor-portal .pp-btn-lg {
+  min-height: 3.25rem;
+  padding: 0.9rem 1.75rem;
+  font-size: 1rem;
+}
+
+.patient-portal .pp-btn:hover,
+.doctor-portal .pp-btn:hover {
+  transform: translateY(-1px);
+}
+
+.patient-portal .pp-btn:active,
+.doctor-portal .pp-btn:active {
+  transform: translateY(0);
+}
+
+.patient-portal .pp-btn-primary,
+.doctor-portal .pp-btn-primary {
+  background-color: var(--pp-forest);
+  border-color: var(--pp-forest);
+  color: white;
+  box-shadow: var(--pp-shadow-pill);
+}
+
+.patient-portal .pp-btn-primary:hover,
+.doctor-portal .pp-btn-primary:hover {
+  background-color: var(--pp-forest-deep);
+  border-color: var(--pp-forest-deep);
+  box-shadow: var(--pp-shadow-pill-hover);
+}
+
+.patient-portal .pp-btn-secondary,
+.doctor-portal .pp-btn-secondary {
+  background-color: transparent;
+  border-color: var(--pp-line-strong);
+  color: var(--pp-ink);
+}
+
+.patient-portal .pp-btn-secondary:hover,
+.doctor-portal .pp-btn-secondary:hover {
+  background-color: var(--pp-white);
+  border-color: var(--pp-sage-dark);
+}
+
+.patient-portal .pp-btn-ghost,
+.doctor-portal .pp-btn-ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--pp-forest);
+}
+
+.patient-portal .pp-btn-ghost:hover,
+.doctor-portal .pp-btn-ghost:hover {
+  background-color: var(--pp-mint);
+}
+
+.patient-portal .pp-btn-light,
+.doctor-portal .pp-btn-light {
+  background-color: var(--pp-white);
+  border-color: var(--pp-white);
+  color: var(--pp-forest);
+}
+
+.patient-portal .pp-btn-light:hover,
+.doctor-portal .pp-btn-light:hover {
+  background-color: var(--pp-mint);
+  border-color: var(--pp-mint);
+}
+
+.patient-portal .pp-btn-danger,
+.doctor-portal .pp-btn-danger {
+  background-color: var(--nl-rose);
+  border-color: var(--nl-rose);
+  color: white;
+}
+
+.patient-portal .pp-btn-danger:hover,
+.doctor-portal .pp-btn-danger:hover {
+  background-color: var(--nl-error-deep);
+}
+
+.patient-portal .pp-btn:disabled,
+.doctor-portal .pp-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Full-width button variant for forms */
+.patient-portal .pp-btn-full,
+.doctor-portal .pp-btn-full {
+  width: 100%;
+}
+
+/* ── Tags / pills ──────────────────────────────────────────────────────────── */
+.patient-portal .pp-tag,
+.doctor-portal .pp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--pp-line);
+  border-radius: 999px;
+  background-color: var(--pp-white);
+  color: var(--pp-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.patient-portal .pp-tag-ink,
+.doctor-portal .pp-tag-ink {
+  color: var(--pp-ink);
+  font-weight: 600;
+}
+
+.patient-portal .pp-tag-forest,
+.doctor-portal .pp-tag-forest {
+  border-color: var(--pp-sage);
+  background-color: var(--pp-mint);
+  color: var(--pp-forest);
+  font-weight: 600;
+}
+
+.patient-portal .pp-tag-muted,
+.doctor-portal .pp-tag-muted {
+  color: var(--pp-muted);
+  border-color: var(--pp-line);
+}
+
+.patient-portal .pp-tag-solid-forest,
+.doctor-portal .pp-tag-solid-forest {
+  border-color: var(--pp-forest);
+  background-color: var(--pp-forest);
+  color: white;
+  font-weight: 600;
+}
+
+/* ── Status dots ───────────────────────────────────────────────────────────── */
+.patient-portal .pp-status-dot,
+.doctor-portal .pp-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  flex: none;
+}
+
+.patient-portal .pp-status-dot.online,
+.doctor-portal .pp-status-dot.online {
+  background-color: var(--pp-forest);
+  box-shadow: 0 0 8px rgba(47, 94, 78, 0.45);
+}
+
+.patient-portal .pp-status-dot.warning,
+.doctor-portal .pp-status-dot.warning {
+  background-color: var(--nl-warning);
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.45);
+}
+
+.patient-portal .pp-status-dot.offline,
+.doctor-portal .pp-status-dot.offline {
+  background-color: var(--pp-muted);
+}
+
+.patient-portal .pp-status-dot.pending,
+.doctor-portal .pp-status-dot.pending {
+  background-color: var(--nl-warning-border);
+  box-shadow: 0 0 8px rgba(160, 108, 66, 0.35);
+}
+
+/* ── Form fields ───────────────────────────────────────────────────────────── */
+.patient-portal .pp-input,
+.doctor-portal .pp-input {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--pp-line-strong);
+  border-radius: var(--pp-radius);
+  background-color: var(--pp-white);
+  color: var(--pp-ink);
+  font-family: var(--nl-font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.patient-portal .pp-input::placeholder,
+.doctor-portal .pp-input::placeholder {
+  color: var(--nl-placeholder);
+}
+
+.patient-portal .pp-input:focus,
+.doctor-portal .pp-input:focus {
+  border-color: var(--pp-forest);
+  box-shadow: 0 0 0 3px rgba(47, 94, 78, 0.12);
+  outline: none;
+  background-color: var(--pp-white);
+}
+
+.patient-portal .pp-input[aria-invalid="true"],
+.doctor-portal .pp-input[aria-invalid="true"] {
+  border-color: var(--nl-rose);
+}
+
+.patient-portal .pp-input-lg,
+.doctor-portal .pp-input-lg {
+  min-height: 3.25rem;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+}
+
+.patient-portal .pp-label,
+.doctor-portal .pp-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--pp-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.patient-portal .pp-field-hint,
+.doctor-portal .pp-field-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  color: var(--pp-muted);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.patient-portal .pp-field-error,
+.doctor-portal .pp-field-error {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--nl-rose);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ── Selection controls ────────────────────────────────────────────────────── */
+.patient-portal .pp-checkbox,
+.doctor-portal .pp-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+  color: var(--pp-body);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.patient-portal .pp-checkbox input[type="checkbox"],
+.doctor-portal .pp-checkbox input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  margin-top: 0.12rem;
+  accent-color: var(--pp-forest);
+}
+
+.patient-portal .pp-checkbox-label,
+.doctor-portal .pp-checkbox-label {
+  font-weight: 600;
+  color: var(--pp-ink);
+}
+
+.patient-portal .pp-radio-group,
+.doctor-portal .pp-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.patient-portal .pp-radio,
+.doctor-portal .pp-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  color: var(--pp-body);
+  font-size: 0.9rem;
+}
+
+.patient-portal .pp-radio input[type="radio"],
+.doctor-portal .pp-radio input[type="radio"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  accent-color: var(--pp-forest);
+}
+
+/* ── Select ────────────────────────────────────────────────────────────────── */
+.patient-portal .pp-select,
+.doctor-portal .pp-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2346715e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────────── */
+.patient-portal .pp-table,
+.doctor-portal .pp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.patient-portal .pp-table th,
+.doctor-portal .pp-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--pp-line);
+  background-color: var(--pp-warm);
+  color: var(--pp-sage-deep);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.patient-portal .pp-table td,
+.doctor-portal .pp-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--pp-line);
+  color: var(--pp-body);
+  vertical-align: middle;
+}
+
+.patient-portal .pp-table tr:last-child td,
+.doctor-portal .pp-table tr:last-child td {
+  border-bottom: none;
+}
+
+.patient-portal .pp-table tbody tr:hover,
+.doctor-portal .pp-table tbody tr:hover {
+  background-color: var(--pp-mint);
+}
+
+.patient-portal .pp-table .pp-table-ink,
+.doctor-portal .pp-table .pp-table-ink {
+  color: var(--pp-ink);
+  font-weight: 600;
+}
+
+/* ── Dividers ──────────────────────────────────────────────────────────────── */
+.patient-portal .pp-rule,
+.doctor-portal .pp-rule {
+  border-top: 1px solid var(--pp-line);
+}
+
+/* ── Alerts / notices ──────────────────────────────────────────────────────── */
+.patient-portal .pp-notice,
+.doctor-portal .pp-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius-lg);
+  background-color: var(--pp-mint);
+  color: var(--pp-forest);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.patient-portal .pp-notice svg,
+.doctor-portal .pp-notice svg {
+  margin-top: 0.08rem;
+  flex: none;
+  color: var(--pp-forest);
+}
+
+.patient-portal .pp-notice-ink,
+.doctor-portal .pp-notice-ink {
+  background-color: var(--pp-white);
+  border-color: var(--pp-line);
+  color: var(--pp-ink);
+}
+
+.patient-portal .pp-notice-ink svg,
+.doctor-portal .pp-notice-ink svg {
+  color: var(--pp-sage-deep);
+}
+
+.patient-portal .pp-warning,
+.doctor-portal .pp-warning {
+  background-color: var(--nl-warning-surface);
+  border-color: var(--nl-warning-border);
+  color: var(--nl-warning-text);
+}
+
+.patient-portal .pp-warning svg,
+.doctor-portal .pp-warning svg {
+  color: var(--nl-clay-deep);
+}
+
+.patient-portal .pp-error,
+.doctor-portal .pp-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--nl-error-border);
+  border-radius: var(--pp-radius-lg);
+  background-color: var(--nl-error-surface);
+  color: var(--nl-rose);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.patient-portal .pp-error svg,
+.doctor-portal .pp-error svg {
+  flex: none;
+  margin-top: 0.06rem;
+  color: var(--nl-rose);
+}
+
+.patient-portal .pp-success,
+.doctor-portal .pp-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--nl-success-border);
+  border-radius: var(--pp-radius-lg);
+  background-color: var(--nl-success-surface);
+  color: var(--nl-success-text);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.patient-portal .pp-success svg,
+.doctor-portal .pp-success svg {
+  flex: none;
+  margin-top: 0.08rem;
+  color: var(--nl-success-text);
+}
+
+/* ── Two-column and grid helpers ───────────────────────────────────────────── */
+.patient-portal .pp-grid-2,
+.doctor-portal .pp-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.patient-portal .pp-grid-3,
+.doctor-portal .pp-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 767px) {
+  .patient-portal .pp-grid-2,
+  .doctor-portal .pp-grid-2,
+  .patient-portal .pp-grid-3,
+  .doctor-portal .pp-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Stack / inline helpers ────────────────────────────────────────────────── */
+.patient-portal .pp-stack,
+.doctor-portal .pp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.patient-portal .pp-inline-stack,
+.doctor-portal .pp-inline-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.patient-portal .pp-row,
+.doctor-portal .pp-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.patient-portal .pp-row-spaced,
+.doctor-portal .pp-row-spaced {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.patient-portal .pp-gap-2,
+.doctor-portal .pp-gap-2 { gap: 0.5rem; }
+.patient-portal .pp-gap-3,
+.doctor-portal .pp-gap-3 { gap: 0.75rem; }
+.patient-portal .pp-gap-4,
+.doctor-portal .pp-gap-4 { gap: 1rem; }
+.patient-portal .pp-gap-6,
+.doctor-portal .pp-gap-6 { gap: 1.5rem; }
+.patient-portal .pp-gap-8,
+.doctor-portal .pp-gap-8 { gap: 2rem; }
+
+.patient-portal .pp-flex-wrap,
+.doctor-portal .pp-flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Icon chips ────────────────────────────────────────────────────────────── */
+.patient-portal .pp-icon-chip,
+.doctor-portal .pp-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--pp-radius);
+  flex: none;
+}
+
+.patient-portal .pp-icon-chip.mint,
+.doctor-portal .pp-icon-chip.mint {
+  background-color: var(--pp-mint);
+  color: var(--pp-forest);
+}
+
+.patient-portal .pp-icon-chip.white,
+.doctor-portal .pp-icon-chip.white {
+  background-color: var(--pp-white);
+  color: var(--pp-forest);
+  border: 1px solid var(--pp-line);
+}
+
+.patient-portal .pp-icon-chip.forest,
+.doctor-portal .pp-icon-chip.forest {
+  background-color: var(--pp-forest);
+  color: white;
+}
+
+/* ── Width constraints ─────────────────────────────────────────────────────── */
+.patient-portal .pp-max-w-card,
+.doctor-portal .pp-max-w-card { max-width: 480px; }
+.patient-portal .pp-max-w-form,
+.doctor-portal .pp-max-w-form { max-width: 560px; }
+.patient-portal .pp-max-w-content,
+.doctor-portal .pp-max-w-content { max-width: 720px; }
+.patient-portal .pp-max-w-wide,
+.doctor-portal .pp-max-w-wide { max-width: 880px; }
+
+/* ── Card header pattern ───────────────────────────────────────────────────── */
+.patient-portal .pp-card-header,
+.doctor-portal .pp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--pp-line);
+}
+
+.patient-portal .pp-card-body,
+.doctor-portal .pp-card-body {
+  padding: 1.5rem;
+}
+
+.patient-portal .pp-card-foot,
+.doctor-portal .pp-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--pp-line);
+}
+
+/* ── Section spacing ───────────────────────────────────────────────────────── */
+.patient-portal .pp-section,
+.doctor-portal .pp-section {
+  padding-block: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.patient-portal .pp-section-sm,
+.doctor-portal .pp-section-sm {
+  padding-block: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.patient-portal .pp-empty,
+.doctor-portal .pp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 3rem 1.5rem;
+}
+
+.patient-portal .pp-empty-body,
+.doctor-portal .pp-empty-body {
+  max-width: 380px;
+}
+
+.patient-portal .pp-empty-title,
+.doctor-portal .pp-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--pp-ink);
+  letter-spacing: -0.02em;
+}
+
+.patient-portal .pp-empty-text,
+.doctor-portal .pp-empty-text {
+  font-size: 0.9rem;
+  color: var(--pp-muted);
+  line-height: 1.65;
+}
+
+/* ── Skeleton loading ──────────────────────────────────────────────────────── */
+.patient-portal .pp-skeleton,
+.doctor-portal .pp-skeleton {
+  background: linear-gradient(90deg, var(--pp-line) 25%, var(--pp-mint) 50%, var(--pp-line) 75%);
+  background-size: 200% 100%;
+  animation: pp-skeleton-shimmer 1.6s ease-in-out infinite;
+  border-radius: var(--pp-radius);
+}
+
+@keyframes pp-skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.patient-portal .pp-skeleton-text,
+.doctor-portal .pp-skeleton-text {
+  height: 0.9rem;
+  width: 100%;
+}
+
+.patient-portal .pp-skeleton-text:nth-child(2) {
+  width: 78%;
+}
+
+.patient-portal .pp-skeleton-text:nth-child(3) {
+  width: 55%;
+}
+
+.patient-portal .pp-skeleton-avatar,
+.doctor-portal .pp-skeleton-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+}
+
+.patient-portal .pp-skeleton-card,
+.doctor-portal .pp-skeleton-card {
+  height: 120px;
+  border-radius: var(--pp-radius-xl);
+}
+
+/* ── Focus ─────────────────────────────────────────────────────────────────── */
+.patient-portal :focus-visible,
+.doctor-portal :focus-visible {
+  outline: 2px solid var(--pp-forest);
+  outline-offset: 2px;
+}
+
+.patient-portal .pp-on-dark :focus-visible,
+.doctor-portal .pp-on-dark :focus-visible {
+  outline-color: white;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────────── */
+/* Durations mirror MOTION in components/motion/Reveal.tsx. Entrances are
+   deliberately short: a page that takes half a second to appear is a page that
+   is slower than the one without animation. */
+.doctor-portal #doctor-main > * {
+  animation: pp-page-appear 180ms ease-out both;
+}
+
+.patient-portal .pp-page-enter,
+.doctor-portal .pp-page-enter {
+  animation: pp-page-appear 180ms ease-out both;
+}
+
+.patient-portal .pp-page-enter-delay-1,
+.doctor-portal .pp-page-enter-delay-1 {
+  animation-delay: 30ms;
+}
+
+.patient-portal .pp-page-enter-delay-2,
+.doctor-portal .pp-page-enter-delay-2 {
+  animation-delay: 60ms;
+}
+
+.patient-portal .pp-page-enter-delay-3,
+.doctor-portal .pp-page-enter-delay-3 {
+  animation-delay: 90ms;
+}
+
+@keyframes pp-page-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Content that appears in place — a disclosure body. Short fade only, and it is
+   scoped to the open state so it replays each time the disclosure is opened
+   rather than only on first paint. The height change itself stays instant so
+   the page keeps up with the tap. */
+.patient-portal details[open] > .pp-swap-enter,
+.doctor-portal details[open] > .pp-swap-enter {
+  animation: pp-swap-appear 180ms ease-out both;
+}
+
+@keyframes pp-swap-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Reduced motion (portal pages) ────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .doctor-portal #doctor-main > * {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .patient-portal .pp-page-enter,
+  .doctor-portal .pp-page-enter,
+  .patient-portal .pp-swap-enter,
+  .doctor-portal .pp-swap-enter {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .patient-portal .pp-btn:hover,
+  .doctor-portal .pp-btn:hover {
+    transform: none !important;
+  }
+
+  .patient-portal .pp-card:hover,
+  .doctor-portal .pp-card:hover {
+    transform: none !important;
+  }
+}
+
+/* ── Accessibility text size (patient layout setting) ────────────────────── */
+/* Portal text is mostly set in fixed px for a stable tablet layout, so a root
+   font-size would not reach it. Zooming the portal subtree scales every label,
+   control and chart together — the behaviour older users expect from a text
+   size control. */
+.patient-portal.pp-text-lg {
+  zoom: 1.08;
+}
+
+.patient-portal.pp-text-xl {
+  zoom: 1.16;
+}
+
+/* ── High contrast mode (portal pages) ────────────────────────────────────── */
+.patient-portal.patient-contrast,
+.doctor-portal.patient-contrast {
+  --pp-ink: var(--nl-ink-950);
+  --pp-body: var(--nl-sand-800);
+  --pp-muted: var(--nl-sage-deep);
+  --pp-line: var(--nl-muted);
+  --pp-line-strong: var(--nl-sand-800);
+  --pp-sage-deep: var(--nl-forest-deep);
+  --pp-forest: var(--nl-forest-950);
+  --pp-forest-deep: var(--nl-scrim);
+}
+
+.patient-portal.patient-contrast .pp-input,
+.doctor-portal.patient-contrast .pp-input {
+  border-color: var(--pp-line-strong) !important;
+  background-color: var(--pp-white) !important;
+  color: var(--pp-ink) !important;
+}
+
+.patient-portal.patient-contrast :focus-visible,
+.doctor-portal.patient-contrast :focus-visible {
+  outline: 3px solid var(--pp-forest) !important;
+  outline-offset: 2px !important;
+}

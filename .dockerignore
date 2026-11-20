@@ -1,0 +1,28 @@
+# Everything here is rebuilt inside the image. Sending it makes the build
+# context (and every layer cache key) far larger than the code it needs.
+
+.git
+.github
+.gitignore
+
+node_modules
+**/node_modules
+**/dist
+
+_screenshots
+docs
+research
+supabase
+scripts
+.agents
+check-cd.cjs
+*.log
+
+# Never bake secrets in; they are injected at run time.
+.env
+.env.*
+server/.env
+server/models
+
+# The Python service builds from its own context (ai-service/Dockerfile).
+ai-service

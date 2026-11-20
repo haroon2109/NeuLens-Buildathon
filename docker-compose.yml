@@ -1,0 +1,134 @@
+# Local, self-contained NeuLens: PostgreSQL, the API + SPA image, and the Python
+# acoustics service. Copy `.env.example` to `.env` to override the defaults.
+#
+#   docker compose up --build      # http://localhost:5000
+#   docker compose down            # keep the database volume
+#   docker compose down -v         # discard data too
+#
+# This is a single-host setup for demos and review. Production runs the same
+# three images on a managed platform (see render.yaml).
+
+name: neulens
+
+x-database-url: &database-url "postgresql://neulens:${POSTGRES_PASSWORD:-neulens-local-password}@db:5432/neulens?schema=public"
+
+x-app-environment: &app-environment
+  NODE_ENV: production
+  HOST: 0.0.0.0
+  PORT: "5000"
+  DATABASE_URL: *database-url
+  # Must be at least 32 characters or the server refuses to start in production.
+  JWT_SECRET: ${JWT_SECRET:-local-development-jwt-secret-change-before-any-real-data}
+  CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:5000,http://127.0.0.1:5000}
+  # Persistent records only: the in-memory store is a development aid.
+  ALLOW_IN_MEMORY_FALLBACK: "false"
+  # Fictional jury accounts. Turn off for anything holding real data.
+  DEMO_ACCESS_ENABLED: ${DEMO_ACCESS_ENABLED:-true}
+  AI_SERVICE_URL: http://ai:8000
+  AI_SERVICE_INTERNAL_KEY: ${AI_SERVICE_INTERNAL_KEY:-local-internal-key-change-me}
+  GNANI_API_KEY: ${GNANI_API_KEY:-}
+  GNANI_API_BASE_URL: ${GNANI_API_BASE_URL:-https://api.vachana.ai}
+  GNANI_DAILY_BUDGET: ${GNANI_DAILY_BUDGET:-200}
+  ASSISTANT_LLM_BASE_URL: ${ASSISTANT_LLM_BASE_URL:-}
+  ASSISTANT_LLM_API_KEY: ${ASSISTANT_LLM_API_KEY:-}
+  ASSISTANT_LLM_MODEL: ${ASSISTANT_LLM_MODEL:-}
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
+  EMAIL_FROM: ${EMAIL_FROM:-NeuLens <no-reply@example.com>}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: neulens
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-neulens-local-password}
+      POSTGRES_DB: neulens
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neulens -d neulens"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  # One-shot schema job. Kept out of the app image so the runtime does not
+  # carry the Prisma CLI, and out of the app's start command so a failed
+  # migration stops the stack instead of serving against a stale schema.
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: *database-url
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      target: runtime
+      args:
+        # Baked into the bundle. The default points the browser at the ai
+        # service's published port on this host.
+        VITE_AI_SERVICE_URL: ${VITE_AI_SERVICE_URL:-http://localhost:8000}
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    environment: *app-environment
+    ports:
+      - "${APP_PORT:-5000}:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      ai:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:5000/livez').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    restart: unless-stopped
+
+  ai:
+    build:
+      context: ./ai-service
+    environment:
+      ENVIRONMENT: production
+      # Shared secret with the API's AI_SERVICE_INTERNAL_KEY. Empty disables it.
+      INTERNAL_API_KEY: ${AI_SERVICE_INTERNAL_KEY:-local-internal-key-change-me}
+      ALLOWED_ORIGINS: ${CLIENT_ORIGIN:-http://localhost:5000,http://127.0.0.1:5000}
+      # Measured features only, no diagnostic model verdicts.
+      ENABLE_MODEL_INFERENCE: "false"
+      VAD_SPEECH_THRESHOLD: "0.5"
+      # Direct browser calls carry a Supabase access token; leave these unset
+      # to route all audio through the API's internal key instead.
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      SUPABASE_JWKS_URL: ${SUPABASE_JWKS_URL:-}
+      GNANI_API_KEY: ${GNANI_API_KEY:-}
+    ports:
+      - "${AI_SERVICE_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import sys,urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).status == 200 else 1)"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  pgdata:

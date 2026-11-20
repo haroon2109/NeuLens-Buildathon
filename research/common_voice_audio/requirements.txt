@@ -1,0 +1,9 @@
+# Mozilla Common Voice preprocessing experiments (research/offline)
+numpy>=1.26
+pandas>=2.1
+soundfile>=0.12
+librosa>=0.10
+tqdm>=4.66
+# Optional: for scripted export from Hugging Face
+datasets>=2.19
+huggingface_hub>=0.23

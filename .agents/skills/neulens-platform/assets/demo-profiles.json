@@ -1,0 +1,24 @@
+{
+  "system": "NeuLens Demonstration & Evaluation Posture",
+  "environment": "Abu Dhabi Future Health Challenge 2026",
+  "demoPatient": {
+    "name": "Haroon",
+    "age": 62,
+    "gender": "MALE",
+    "patientId": "CV-2026-HAROON",
+    "pin": "246810",
+    "language": "en",
+    "educationYears": 14,
+    "loginEndpoint": "/patient/login",
+    "portalPath": "/patient/dashboard"
+  },
+  "demoClinician": {
+    "name": "Dr. Mohamed",
+    "email": "doctor.demo@neulens.ai",
+    "password": "DemoDoctor2026!",
+    "specialty": "Neurology & Cognitive Health",
+    "institution": "NeuLens Clinical Demonstration, Abu Dhabi",
+    "loginEndpoint": "/doctor/login",
+    "portalPath": "/doctor/dashboard"
+  }
+}

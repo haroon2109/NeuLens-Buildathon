@@ -1,0 +1,13 @@
+# MRI Alzheimer's classification experiment (research/offline only)
+# Install PyTorch/torchvision appropriate for your platform (CPU/CUDA): https://pytorch.org/get-started/locally/
+torch>=2.2
+torchvision>=0.17
+numpy>=1.26
+pandas>=2.1
+scikit-learn>=1.4
+Pillow>=10.0
+tqdm>=4.66
+kaggle>=1.6.17
+kagglehub>=0.3.0
+matplotlib>=3.8
+seaborn>=0.13

@@ -1,0 +1,7 @@
+# Facial/behavioural research analysis (offline, consented/synthetic recordings)
+numpy>=1.26
+pandas>=2.1
+opencv-python>=4.9
+tqdm>=4.66
+# Optional but recommended for landmarks/head pose/eye-region tracking:
+# mediapipe>=0.10

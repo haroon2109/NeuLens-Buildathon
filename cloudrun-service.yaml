@@ -1,0 +1,62 @@
+# Declarative Google Cloud Run Service Spec for NeuLens
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: neulens-clinical-server
+  namespace: default
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/launch-stage: GA
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "10"
+        run.googleapis.com/client-name: "cloud-console"
+        run.googleapis.com/cpu-throttling: "true"
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+        - image: asia-south1-docker.pkg.dev/PROJECT_ID/neulens-repo/neulens-server:latest
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"
+          ports:
+            - name: http1
+              containerPort: 5000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "5000"
+            - name: GEMINI_MODEL
+              value: "gemini-2.5-flash"
+            - name: DEMO_ACCESS_ENABLED
+              value: "true"
+            # In production, inject secrets via Google Cloud Secret Manager:
+            # - name: GEMINI_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       key: "latest"
+            #       name: "gemini-api-key"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3

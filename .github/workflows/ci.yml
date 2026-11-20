@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server · typecheck and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Build server artifacts (tsc emit)
+        run: npm run build
+      - name: Generate Prisma client
+        run: npx prisma generate
+      - name: Typecheck (type safety, before runtime checks)
+        run: npx tsc --noEmit
+      - name: Unit and integration tests
+        run: npm test
+
+  migration:
+    name: Migration deploy path (CI verification)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Build + generate Prisma client
+        run: npm run build && npx prisma generate
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Verify migration deploy script exits cleanly (no DB)
+        # This validates the script itself parses and exits 0 when DATABASE_URL
+        # is missing, so a bad package.json script doesn't silently block merges.
+        run: npx ts-node --project tsconfig.json src/scripts/migrate-deploy.ts
+        env:
+          NODE_ENV: test
+
+  client:
+    name: Client · typecheck and production build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Production build
+        run: npx vite build
+
+  ai-image:
+    name: AI service · image check (CPU torch)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t neulens-ai-service:ci ai-service
+      # The default PyPI torch wheel pulls the whole CUDA stack (~5 GB) that a
+      # CPU service never uses. A dependency change that reintroduces it would
+      # silently inflate every deploy, so it fails here instead.
+      - name: Assert no CUDA or NVIDIA packages
+        run: |
+          cuda_packages=$(docker run --rm neulens-ai-service:ci pip list --format freeze | grep -ciE '^(nvidia|triton)' || true)
+          echo "CUDA-related packages: ${cuda_packages}"
+          test "${cuda_packages}" -eq 0
+      - name: Assert CPU-only torch and a loadable VAD model
+        run: |
+          docker run --rm -i neulens-ai-service:ci python - <<'PY'
+          import torch
+
+          assert torch.version.cuda is None, f"expected a CPU build, got CUDA {torch.version.cuda}"
+          assert not torch.cuda.is_available()
+
+          from app.services.acoustics import available_vad
+
+          assert available_vad() == "silero", f"expected the Silero model, got {available_vad()}"
+          print("torch", torch.__version__, "| vad", available_vad())
+          PY
+      - name: Report image size
+        run: |
+          size=$(docker image inspect -f '{{.Size}}' neulens-ai-service:ci)
+          printf 'Image size: %s MB (uncompressed)\n' "$((size / 1024 / 1024))"
+
+  dependency-audit:
+    name: Dependency audit (advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Reported for visibility. Transitive advisories should be triaged, not
+      # allowed to block unrelated pull requests.
+      - name: Server production dependencies
+        working-directory: server
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+      - name: Client production dependencies
+        working-directory: client
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high

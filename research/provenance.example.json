@@ -1,0 +1,11 @@
+{
+  "dataset_name": "ADReSS-2020",
+  "dataset_release": "2020 challenge data",
+  "access_agreement": "research use only; redistribution prohibited",
+  "commercial_use_approved": false,
+  "preprocessing_version": "1.0.0",
+  "feature_version": "neulens-acoustics-v1",
+  "code_commit": "replace-with-git-sha",
+  "run_date_utc": "2026-11-11T00:00:00Z",
+  "notes": "Technical signal validation only; no clinical claim."
+}

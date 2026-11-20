@@ -1,0 +1,318 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  patientId          String?   @unique
+  name               String
+  email              String    @unique
+  passwordHash       String
+  role               String    @default("PATIENT") // PATIENT, CLINICIAN, ADMIN
+  age                Int
+  dob                String?
+  pinHash            String? // bcrypt hash of the patient PIN — never the PIN itself
+  failedLoginAttempts Int      @default(0)
+  lockedUntil        DateTime?
+  gender             String // e.g. MALE, FEMALE, OTHER
+  language           String // e.g. ENGLISH, HINDI, TAMIL
+  educationYears     Int?
+  handedness         String? // RIGHT, LEFT, AMBIDEXTROUS
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  assessments        Assessment[]
+  baselines          Baseline[]
+  longitudinalRecords LongitudinalRecord[]
+  changeDetections   ChangeDetection[]
+  contextInputs      ContextInput[]
+  brainHealthProfile BrainHealthProfile?
+  consents           Consent[]
+  carePlans          CarePlan[]
+  appointments       Appointment[]
+  referrals          ReferralOutcome[]
+  externalInstruments ExternalInstrumentRecord[]
+  auditLogs          AuditLog[]
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model Assessment {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime @default(now())
+  overallScore  Float? // null when the session produced no interpretable score
+  reviewState   String   @default("NOT_REVIEWED") // NOT_REVIEWED, NOT_INTERPRETABLE, REVIEW_PROMPT, CLINICIAN_REVIEWED
+  status        String @default("COMPLETED") // ASSIGNED, IN_PROGRESS, COMPLETED
+  reviewStatus  String @default("PENDING_REVIEW") // PENDING_REVIEW, REVIEWED, FOLLOWUP_REQUIRED
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  taskResponses Json?
+  baselineId    String?
+  baseline      Baseline? @relation(fields: [baselineId], references: [id], onDelete: SetNull)
+
+  eyeMetrics   EyeMetrics?
+  voiceMetrics VoiceMetrics?
+  faceMetrics  FaceMetrics?
+  report       Report?
+  carePlan     CarePlan?
+  longitudinalRecords LongitudinalRecord[]
+  contextInputs      ContextInput[]
+
+  @@index([userId, date])
+  @@index([reviewStatus])
+}
+
+model EyeMetrics {
+  id            String @id @default(uuid())
+  assessmentId  String @unique
+  assessment    Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  reactionTime  Float
+  blinkRate     Float
+  fixationScore Float
+}
+
+model VoiceMetrics {
+  id           String @id @default(uuid())
+  assessmentId String @unique
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  speechRate   Float
+  pauseScore   Float
+  jitter       Float
+  shimmer      Float
+}
+
+model FaceMetrics {
+  id           String @id @default(uuid())
+  assessmentId String @unique
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  symmetry     Float
+  tremorScore  Float
+}
+
+model Report {
+  id             String @id @default(uuid())
+  assessmentId   String @unique
+  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  recommendation String  @db.Text
+  doctorNotes    String?
+  pdfUrl         String?
+}
+
+model Baseline {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  establishedAt  DateTime  @default(now())
+  @@index([userId, isActive])
+  overallScore   Float
+  cognitiveScore Float
+  functionalScore Float
+  eyeScore       Float?
+  voiceScore     Float?
+  faceScore      Float?
+  contextScore   Float?
+  isActive       Boolean   @default(true)
+  assessments    Assessment[]
+  changeDetections ChangeDetection[]
+}
+
+model LongitudinalRecord {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessmentId     String   @unique
+  assessment       Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  recordedAt       DateTime @default(now())
+  overallScore     Float
+  changeFromBaseline Float?
+  trendDirection   String? // IMPROVING, STABLE, DECLINING
+  assessmentsCount Int      @default(1)
+
+  @@index([userId, recordedAt])
+}
+
+model ChangeDetection {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Null when no personal baseline exists: a session that could not establish one
+  // has nothing to compare against, and an empty-string id would imply otherwise.
+  baselineId       String?
+  baseline         Baseline?   @relation(fields: [baselineId], references: [id], onDelete: Cascade)
+  detectedAt       DateTime    @default(now())
+  status           String // NO_CHANGE, REVIEW, INSUFFICIENT_DATA
+  cognitiveChange  Float?
+  outsideBaseline  Boolean     @default(false)
+  reviewReasons    Json?
+  brainHealthProfile BrainHealthProfile?
+
+  @@index([userId, detectedAt])
+}
+
+model ContextInput {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessmentId  String?
+  assessment    Assessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  source        String // sleep | lifestyle_activity | clinical_metabolic | wearable
+  recordedAt    DateTime @default(now())
+  values        Json
+  consentGranted Boolean @default(false)
+  consentAt     DateTime?
+
+  @@index([userId, recordedAt])
+}
+
+model BrainHealthProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  changeDetectionId  String   @unique
+  changeDetection    ChangeDetection @relation(fields: [changeDetectionId], references: [id], onDelete: Cascade)
+  profileScore       Float? // null when the session was not interpretable
+  reviewSignal       String   @default("NOT_REVIEWED") // administrative review state; never a risk tier
+  interpretation     String  @db.Text // Risk/change interpretation text
+  nextSteps          Json // Personalized next steps array
+  generatedAt        DateTime @default(now())
+  reviewedAt         DateTime?
+  reviewedBy         String?
+}
+
+// ---------------------------------------------------------------------------
+// Governance, consent and care-workflow records.
+// These are server-side records of legal/clinical consequence; they must not
+// exist only in a browser's localStorage.
+// ---------------------------------------------------------------------------
+
+model Consent {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version      String // consent text version, e.g. "2026-11-consent-v1"
+  scopes       Json // { dataCollection: true, cameraMic: true, ... }
+  granted      Boolean   @default(true)
+  grantedAt    DateTime  @default(now())
+  withdrawnAt  DateTime?
+  actorRole    String    @default("PATIENT")
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId, grantedAt])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?
+  actor        User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorRole    String?
+  action       String // e.g. PATIENT_LOGIN, ASSESSMENT_READ, CONSENT_RECORDED
+  resourceType String // e.g. PATIENT, ASSESSMENT, CONSENT, APPOINTMENT
+  resourceId   String?
+  success      Boolean  @default(true)
+  ipAddress    String?
+  userAgent    String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([resourceType, resourceId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
+model CarePlan {
+  id           String   @id @default(uuid())
+  patientId    String
+  patient      User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  assessmentId String   @unique
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  action       String // REPEAT_SCREENING | CLINICAL_REVIEW | REVIEW_CONTEXT | SUPPORT_FUNCTION
+  followUpDate String?
+  notes        String   @default("")
+  plan         Json? // full clinician-approved plan as entered
+  version      Int      @default(1)
+  savedBy      String
+  savedAt      DateTime @default(now())
+
+  @@index([patientId, savedAt])
+}
+
+model ReferralOutcome {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  assessmentId  String?
+  type          String
+  reason        String
+  destination   String   @default("")
+  urgency       String   @default("ROUTINE")
+  status        String   @default("DRAFT")
+  outcomeStatus String   @default("PENDING")
+  outcomeNotes  String?
+  outcomeAt     DateTime?
+  followUpDate  String?
+  closedLoop    Boolean  @default(false)
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([patientId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// A score produced by a validated instrument administered by a clinician
+// outside Neulens (MoCA, RUDAS, AD8, MMSE). It is stored, never computed:
+// the platform does not administer these, does not rescore them, and does not
+// fold them into its own composite. The record exists so a clinician has an
+// externally validated anchor next to the platform's own longitudinal output,
+// and so the record states which language and version produced it.
+// ---------------------------------------------------------------------------
+model ExternalInstrumentRecord {
+  id                String   @id @default(uuid())
+  patientId         String
+  patient           User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  instrumentKey     String // allowlisted registry key, e.g. MOCA
+  instrumentVersion String? // publisher edition/version as entered by the clinician
+  language          String // language of administration, e.g. ar, en
+  administeredOn    DateTime // date the instrument was administered
+  administeredBy    String // clinician who administered it, as entered
+  score             Float
+  maxScore          Float // total for the version used, from the registry at record time
+  licenceConfirmed  Boolean  @default(false) // administering clinician holds the required licence
+  licenceReference  String? // certification or purchase reference, when the publisher requires one
+  notes             String?  @db.Text
+  recordedBy        String? // clinician user id that entered the record
+  createdAt         DateTime @default(now())
+
+  @@index([patientId, administeredOn])
+}
+
+model Appointment {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  assessmentId  String?
+  title         String
+  type          String   @default("FOLLOW_UP") // FOLLOW_UP | REPEAT_ASSESSMENT | RESULTS_REVIEW | TELEHEALTH
+  date          String // YYYY-MM-DD
+  time          String
+  location      String   @default("")
+  status        String   @default("UPCOMING") // UPCOMING | COMPLETED | CANCELLED | RESCHEDULED
+  communication String   @default("")
+  clinician     String   @default("")
+  createdBy     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([patientId, date])
+  @@index([status])
+}

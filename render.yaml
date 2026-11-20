@@ -1,0 +1,103 @@
+services:
+  - type: web
+    name: cognivision-ai
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build && npm run prisma:generate
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cognivision-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: https://cognivision-ai.onrender.com
+      # Transactional email for signup / password-reset codes.
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      # This instance is the public jury/prototype demo whose fictional logins
+      # are documented in the README. Set to "false" on any instance that
+      # holds real patient records: demo access is otherwise off in production.
+      - key: DEMO_ACCESS_ENABLED
+        value: "true"
+      # The frontend build is done by buildCommand. The startup command only
+      # runs the server; schema changes are applied by a separate migration
+      # deploy command so a bad migration fails the deploy rather than starting
+      # the service in a degraded (in-memory only) mode.
+      - key: GNANI_API_BASE_URL
+        value: https://api.vachana.ai
+      - key: GNANI_API_KEY
+        sync: false
+      - key: GNANI_TIMEOUT_MS
+        value: 15000
+      # Patient voice copilot — any OpenAI-compatible chat endpoint. When these
+      # are blank the assistant keeps its scripted replies and open-ended
+      # questions get the "cannot answer here yet" fallback.
+      - key: ASSISTANT_LLM_BASE_URL
+        sync: false
+      - key: ASSISTANT_LLM_API_KEY
+        sync: false
+      - key: ASSISTANT_LLM_MODEL
+        sync: false
+      # Server-side acoustic analysis (FastAPI service below). The internal key
+      # must match INTERNAL_API_KEY on the neulens-ai service; set both in the
+      # Render dashboard (sync: false) to the same generated value.
+      - key: AI_SERVICE_URL
+        value: https://neulens-ai.onrender.com
+      - key: AI_SERVICE_INTERNAL_KEY
+        sync: false
+
+  - type: web
+    name: neulens-ai
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: ai-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWKS_URL
+        sync: false
+      - key: SUPABASE_AUDIENCE
+        value: authenticated
+      - key: ALLOWED_ORIGINS
+        value: https://cognivision-ai.onrender.com
+      - key: GNANI_API_KEY
+        sync: false
+      - key: ENABLE_MODEL_INFERENCE
+        value: false
+      # Silero VAD speech probability. Lower it if real recordings are being
+      # reported as little speech; the value used is recorded in each response.
+      - key: VAD_SPEECH_THRESHOLD
+        value: "0.5"
+      # Shared secret with the Node service's AI_SERVICE_INTERNAL_KEY. Set in
+      # the Render dashboard to the same value as AI_SERVICE_INTERNAL_KEY.
+      - key: INTERNAL_API_KEY
+        sync: false
+
+databases:
+  - name: cognivision-db
+    databaseName: cognivision
+    user: cognivision
+    plan: free
+    region: oregon
+

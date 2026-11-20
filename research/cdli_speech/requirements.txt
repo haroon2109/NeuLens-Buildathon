@@ -1,0 +1,6 @@
+# CDLI speech preprocessing experiments (research/offline)
+numpy>=1.26
+pandas>=2.1
+soundfile>=0.12
+librosa>=0.10
+tqdm>=4.66

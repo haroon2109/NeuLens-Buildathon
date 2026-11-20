@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NeuLens Clinical Screening Rubric",
+  "version": "1.0.0",
+  "description": "Descriptive biometric and cognitive boundaries for the NeuLens multimodal screening platform. Used for within-person change detection and quality gating.",
+  "modalities": {
+    "ocular": {
+      "reactionTimeMs": {
+        "typicalRange": [200, 260],
+        "latencyReviewThreshold": 265,
+        "unit": "milliseconds"
+      },
+      "blinkRatePerMin": {
+        "typicalRange": [12, 18],
+        "unit": "blinks/min"
+      },
+      "fixationStability": {
+        "minimumAcceptable": 75.0,
+        "robustFixation": 90.0,
+        "unit": "stability_index_percentage"
+      }
+    },
+    "acoustic": {
+      "speechRateWpm": {
+        "typicalRange": [125, 155],
+        "unit": "words/minute"
+      },
+      "pauseCadenceScore": {
+        "baselineThreshold": 80.0,
+        "unit": "fluency_index_0_to_100"
+      },
+      "jitterPercent": {
+        "normalCeiling": 0.20,
+        "unit": "percentage"
+      },
+      "shimmerDb": {
+        "normalCeiling": 1.50,
+        "unit": "decibels"
+      }
+    },
+    "facial": {
+      "symmetryIndex": {
+        "expectedSymmetry": 90.0,
+        "unit": "percentage"
+      },
+      "microTremorScore": {
+        "normalBaseline": 15.0,
+        "unit": "stability_variance"
+      }
+    }
+  },
+  "longitudinalChangeThresholds": {
+    "stableWindowDelta": [-4.0, 4.0],
+    "reviewPromptNegativeDelta": -5.0,
+    "consecutiveReviewTriggerCount": 2
+  }
+}

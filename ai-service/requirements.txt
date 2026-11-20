@@ -1,0 +1,35 @@
+# Python 3.12+ (tested on 3.14). Versions are lower bounds because
+# pydantic-core publishes wheels per interpreter; pip resolves the newest
+# compatible build.
+fastapi>=0.118
+uvicorn[standard]>=0.34
+pydantic>=2.12
+pydantic-settings>=2.7
+PyJWT[crypto]>=2.10
+httpx>=0.28
+python-multipart>=0.0.20
+
+# Acoustic analysis of recorded speech (voice/speech pipeline).
+# librosa is ISC-licensed; praat-parselmouth links Praat, which is GPLv3.
+librosa>=1.0
+praat-parselmouth>=0.4.7
+numpy>=2.1
+scipy>=1.13  # librosa dependency; declared explicitly for signal processing
+
+# Speech/non-speech detection. Silero VAD is MIT-licensed, code and weights.
+# The PyPI package requires torch, so the CPU-only build is installed from
+# PyTorch's own index: the default PyPI wheel drags in the whole CUDA stack
+# (~5 GB of nvidia-* wheels) that this CPU service never uses. PEP 440 ranks
+# 2.15.0+cpu above 2.15.0, so pip prefers this build rather than falling back
+# to the CUDA one. Non-Linux development machines need to install torch from
+# https://download.pytorch.org/whl/cpu themselves; the wheels there are
+# platform-specific.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0+cpu
+silero-vad>=6.2,<7
+
+# Google AI Stack (Gemini 2.5 Flash, Gemini Live, Gemma)
+google-genai>=0.1.0
+
+# dev / test
+pytest>=8.3

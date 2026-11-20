@@ -1,0 +1,106 @@
+import type { SupportedLanguage } from './types';
+import { en } from './entryCopy.en';
+import { ar } from './entryCopy.ar';
+
+export interface EntryCopy {
+  hub: {
+    patientScreening: string;
+    patientLogin: string;
+    staffSignIn: string;
+    staff: string;
+    badge: string;
+    title: string;
+    lead: string;
+    whatToExpect: string;
+    whatToExpectDetail: string;
+    signals: string[];
+    portalEyebrow: string;
+    continueTitle: string;
+    chooseOption: string;
+    newPatient: string;
+    newPatientDetail: string;
+    newPatientNote: string;
+    returningPatient: string;
+    returningDetail: string;
+    resultsNote: string;
+  };
+  demo: {
+    heading: string;
+    doctorDesc: string;
+    patientIdDesc: string;
+    sharedDesc: string;
+    openingPatient: string;
+    patient: string;
+    patientMeta: string;
+    openingDoctor: string;
+    doctor: string;
+    doctorMeta: string;
+    credentialsSummary: string;
+    clinicianLabel: string;
+    patientLabel: string;
+    patientCheckinLabel: string;
+    pinLabel: string;
+    sessionFailed: string;
+    unavailable: string;
+  };
+  login: {
+    backToWelcome: string;
+    stepBadge: string;
+    stepCount: string;
+    title: string;
+    subtitle: string;
+    errorHeading: string;
+    fallbackError: string;
+    patientIdLabel: string;
+    patientIdHint: string;
+    pinLabel: string;
+    pinPlaceholder: string;
+    pinHint: string;
+    submitting: string;
+    submit: string;
+    newHere: string;
+    createProfile: string;
+    secureNote: string;
+    footerLostId: string;
+    footerClinician: string;
+    idRequired: string;
+    pinInvalid: string;
+    homeLabel: string;
+  };
+  register: {
+    backToWelcome: string;
+    stepBadge: string;
+    stepCount: string;
+    title: string;
+    subtitle: string;
+    errorHeading: string;
+    fallbackError: string;
+    fullName: string;
+    namePlaceholder: string;
+    age: string;
+    agePlaceholder: string;
+    gender: string;
+    genderOptions: Array<{ value: string; label: string }>;
+    pinLabel: string;
+    pinNote: string;
+    pinPlaceholder: string;
+    pinHint: string;
+    handedness: string;
+    handednessOptions: Array<{ value: string; label: string }>;
+    education: string;
+    submitting: string;
+    submit: string;
+    alreadyHave: string;
+    signIn: string;
+    secureNote: string;
+    footerNote: string;
+    footerTime: string;
+    nameRequired: string;
+    ageInvalid: string;
+    pinInvalid: string;
+    homeLabel: string;
+  };
+}
+
+export const getEntryCopy = (language: SupportedLanguage): EntryCopy =>
+  language === 'ar' ? ar : en;

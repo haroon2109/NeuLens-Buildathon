@@ -1,0 +1,2 @@
+-r ../ai-service/requirements.txt
+-r ../ai-service/requirements-research.txt

@@ -1,0 +1,91 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+server/dist/
+
+# runtime caches pinned privately; never commit generated build output
+.env
+.env.*.local
+.env.defaults
+*.local
+
+# claude / coding-agent session artifacts
+CLAUDE.md
+AGENTS.md
+agents
+.agents/*
+!.agents/skills
+
+# editor + os
+.DS_Store
+*.swp
+.vscode
+.idea
+
+# temporary eval artifacts
+neulens-eval*
+_tmp
+coverage/
+
+# Vite and TypeScript caches
+.vite/
+client/.vite/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+.env.local
+.env.*.local
+client/.env
+client/.env.*
+!client/.env.example
+client/.env.local
+client/.env.*.local
+server/.env
+server/.env.*
+!server/.env.example
+server/.env.local
+server/.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python (AI service)
+ai-service/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Prisma and generated client files
+server/prisma/.env
+server/prisma/dev.db
+server/prisma/dev.db-journal
+
+# Arabic model weights (downloaded locally, not committed)
+server/models/
+
+# Research datasets and experiment artifacts (do not commit)
+research/mri_alzheimers/data/
+research/mri_alzheimers/runs/
+research/mri_alzheimers/.venv/
+research/**/data/
+research/**/runs/
+*.pt
+*.pth
+/backups/

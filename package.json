@@ -1,0 +1,36 @@
+{
+  "name": "neulens-ai",
+  "version": "1.0.0",
+  "description": "NeuLens - AI-Powered Neurocognitive Screening & Brain-Health Monitoring (Engineered by Google Antigravity)",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix server install && npm --prefix client install",
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "build": "npm run build:client && npm run build:server",
+    "db:deploy": "npm --prefix server run prisma:deploy",
+    "start": "node server/dist/app.js",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "test": "npm --prefix server test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "google-antigravity",
+    "google-gemini",
+    "mediapipe",
+    "neurology",
+    "cognitive-assessment",
+    "ai-healthcare",
+    "google-startup-buildathon"
+  ],
+  "author": "Google Antigravity Agent & NeuLens Team",
+  "license": "ISC",
+  "dependencies": {
+    "cognivision-ai-client": "file:client",
+    "cognivision-ai-server": "file:server"
+  }
+}
