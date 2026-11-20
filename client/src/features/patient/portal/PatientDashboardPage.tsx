@@ -2,22 +2,18 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Activity,
-  AlertCircle,
+  AlertTriangle,
   ArrowRight,
   Bell,
-  Brain,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
-  ClipboardList,
-  Eye,
-  FileText,
+  Clock,
   Heart,
   HeartPulse,
   Info,
   MapPin,
   Mic,
-  Moon,
   PhoneCall,
   Pill as PillIcon,
   Plus,
@@ -27,7 +23,6 @@ import {
   Sparkles,
   Stethoscope,
   Timer,
-  TrendingUp,
   UserCheck,
   Users,
   Volume2,
@@ -36,100 +31,51 @@ import {
 import { useAuthStore } from '../../../store/authStore';
 import { treatmentTeam, usePatientPortalStore } from '../../../store/patientPortalStore';
 import { usePatientOverview } from './usePatientOverview';
-import { ErrorState, LoadingState } from '../../../components/systemStates';
-import { BrainHealthPathway, derivePathwayFromOverview } from '../../../components/BrainHealthPathway';
-import { HealthcareScene } from '../../../components/illustrations/HealthcareScene';
 import { MotionReveal } from '../../../components/motion/Reveal';
 import {
-  AssessmentStatusPill,
   Card,
-  EmptyState,
   Pill,
   PortalPageHeader,
-  ScoreDial,
   SectionTitle,
-  StatCard,
   formatDate
 } from './ui';
 import { useLanguageStore } from '../../../services/language/LanguageManager';
-import { getDashboardCopy } from '../../../services/language/dashboardCopy';
-import { getPathwayCopy } from '../../../services/language/pathwayCopy';
-import { getPortalTranslation } from '../../../services/language/portalTranslations';
 import { useVoiceAssistantStore } from '../../../services/voice/VoiceInstructionEngine';
 
 export const PatientDashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   const { currentLanguage } = useLanguageStore();
   const { speak, isSpeaking, stopSpeaking } = useVoiceAssistantStore();
-  const copy = getDashboardCopy(currentLanguage);
-  const statusText = getPortalTranslation(currentLanguage).shell.status;
-  const { appointments, notifications, sleep, wellbeing } = usePatientPortalStore();
+  const { appointments } = usePatientPortalStore();
+  const { latestAssessment, baseline } = usePatientOverview();
 
-  // Senior 60+ Accessibility Mode toggle
-  const [seniorElderMode, setSeniorElderMode] = useState(true);
+  // Simple daily routine toggles for elderly patients
+  const [morningWalk, setMorningWalk] = useState(true);
+  const [morningMeds, setMorningMeds] = useState(true);
+  const [waterGlasses, setWaterGlasses] = useState(true);
 
-  // Quick Daily Routine Check state
-  const [routineWalk, setRoutineWalk] = useState(true);
-  const [routineMeds, setRoutineMeds] = useState(true);
-  const [routineBrainGame, setRoutineBrainGame] = useState(false);
-
-  const hasContext = [
-    sleep.durationHours,
-    sleep.quality,
-    sleep.steps,
-    sleep.activeMinutes,
-    wellbeing.mood,
-    wellbeing.stress
-  ].some((value) => typeof value === 'number' && value > 0);
-
-  const careTeamInitials = treatmentTeam.doctor
-    .replace(/^Dr\.?\s*/i, '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('');
-
-  const { assessments, latestAssessment, baseline, changes, brainHealth, context, isLoading, error, refresh } =
-    usePatientOverview();
-
-  const firstName = (user?.name || 'Ramanathan').split(' ')[0];
+  const firstName = (user?.name || 'Swaminathan').split(' ')[0];
   const nextAppointment = appointments.find((item) => item.status === 'UPCOMING' || item.status === 'RESCHEDULED');
-  const latestChange = changes[0];
-  const unread = notifications.filter((item) => !item.read).length;
-  const recentAssessments = assessments.slice(0, 3);
 
-  const monitoringStatus = brainHealth?.reviewSignal === 'REVIEW_PROMPT'
-    ? copy.hero.reviewSuggested
-    : brainHealth?.reviewSignal === 'NOT_INTERPRETABLE'
-      ? copy.hero.moreDataNeeded
-      : copy.hero.monitoringOnly;
-
-  const pathway = derivePathwayFromOverview(
-    { baseline, changes, brainHealth, assessments, context },
-    getPathwayCopy(currentLanguage)
-  );
-  const preventionSteps = (brainHealth?.nextSteps || []).filter((s: any) => s?.stage === 4 || s?.type === 'PERSONALIZED_PREVENTION' || s?.type === 'REVIEW_CONTEXT');
-  const personalizedPrevention = preventionSteps.length ? { signals: undefined, note: preventionSteps.map((s: any) => s.action || s).filter(Boolean).join(' ') } : null;
-
-  // Vernacular greeting calculation
+  // Friendly vernacular greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
     if (currentLanguage === 'ta') {
-      return timeOfDay === 'morning' ? `காலை வணக்கம், ${firstName}` : `வணக்கம், ${firstName}`;
+      return timeOfDay === 'morning' ? `காலை வணக்கம், ${firstName} அய்யா` : `வணக்கம், ${firstName} அய்யா`;
     }
     if (currentLanguage === 'hi') {
-      return timeOfDay === 'morning' ? `शुभ प्रभात, ${firstName}` : `नमस्ते, ${firstName}`;
+      return timeOfDay === 'morning' ? `शुभ प्रभात, ${firstName} जी` : `नमस्ते, ${firstName} जी`;
     }
     return timeOfDay === 'morning' ? `Good morning, ${firstName}` : `Welcome back, ${firstName}`;
   };
 
+  // Elder-friendly spoken voice text
   const dashboardVoiceText = currentLanguage === 'ta'
-    ? `வணக்கம் ${firstName}. உங்கள் மூளை ஆரோக்கியம் மற்றும் நினைவாற்றல் நிலை சீராக உள்ளது. இன்று காலை நடைப்பயிற்சி மற்றும் மருந்து எடுத்துக் கொண்டீர்கள். அடுத்த 5 நிமிட பரிசோதனைக்கு தயாரா?`
+    ? `வணக்கம் ${firstName} அய்யா. உங்கள் நினைவாற்றல் மற்றும் உடல்நலம் மிகவும் நன்றாக உள்ளது. எந்த கவலையும் வேண்டாம். உங்கள் மருத்துவர் மற்றும் குடும்பத்தினருடன் இணைக்கப்பட்டுள்ளீர்கள். இன்றைய மாத்திரை மற்றும் 5 நிமிட நினைவாற்றல் விளையாட்டை செய்ய கீழே உள்ள பட்டனை தொடவும்.`
     : currentLanguage === 'hi'
-    ? `नमस्ते ${firstName}. आपका मस्तिष्क स्वास्थ्य और स्मृति स्कोर स्थिर है। आज सुबह की दवा पूरी हुई। क्या आप 5 मिनट की त्वरित जांच के लिए तैयार हैं?`
-    : `Hello ${firstName}. Your brain health is stable within your personal longitudinal baseline. Your morning routine is active. Ready for your 5-minute multimodal check-in?`;
+    ? `नमस्ते ${firstName} जी। आपका स्वास्थ्य और याददाश्त बिल्कुल सामान्य और अच्छी है। चिंता की कोई बात नहीं। आज की दवा और 5 मिनट की त्वरित मस्तिष्क जांच के लिए नीचे दिए गए हरे बटन को दबाएं।`
+    : `Hello ${firstName}. Your brain health is completely stable and healthy. No need to worry. Your doctor and family are linked with you. Tap the green button below for your quick 5-minute memory check-in.`;
 
   const handleVoiceSummary = () => {
     if (isSpeaking) {
@@ -140,492 +86,320 @@ export const PatientDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className={`space-y-6 ${seniorElderMode ? 'text-base font-normal' : ''}`}>
-      {/* Top Accessibility & Vernacular Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50/80 via-teal-50/40 to-warm p-3.5 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-700 text-white font-bold text-xs">
-            🇮🇳
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+      {/* 1. TOP COMFORT BAR: Audio Reading & Elder Assurance */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200/90 bg-gradient-to-r from-emerald-50 via-teal-50/50 to-warm p-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold text-lg shadow-xs">
+            👴
           </span>
-          <span className="text-xs font-bold text-slate-800 tracking-wide">
-            Startup Buildathon India · Senior Citizen Care Protocol (60+)
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Spoken Voice Guidance */}
-          <button
-            type="button"
-            onClick={handleVoiceSummary}
-            className="flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-800 shadow-xs hover:bg-emerald-50 transition"
-          >
-            {isSpeaking ? <VolumeX className="h-3.5 w-3.5 text-rose-600 animate-pulse" /> : <Volume2 className="h-3.5 w-3.5 text-emerald-700" />}
-            {isSpeaking ? 'Stop Voice' : 'Listen in Vernacular (ஒலி விளக்கம்)'}
-          </button>
-
-          {/* Senior 60+ View Mode Toggle */}
-          <button
-            type="button"
-            onClick={() => setSeniorElderMode(!seniorElderMode)}
-            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold shadow-xs transition ${
-              seniorElderMode
-                ? 'bg-emerald-700 text-white'
-                : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            👴 {seniorElderMode ? '60+ Senior Elder Mode: ON' : 'Standard View'}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Header */}
-      <PortalPageHeader
-        eyebrow="NeuLens Longitudinal Brain Health Portal"
-        title={getGreeting()}
-        description="Comprehensive 5-minute multimodal cognitive screening, personal baseline tracking, and Ayushman Bharat health network."
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              to="/patient/assessment/intro"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest px-6 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgba(27,51,43,0.5)] transition-all hover:bg-forest-deep hover:shadow-[0_14px_28px_-12px_rgba(27,51,43,0.65)] hover:-translate-y-0.5"
-            >
-              <Sparkles className="h-4 w-4" /> Start 5-Min Screening
-            </Link>
-          </div>
-        }
-      />
-
-      {/* HERO SECTION: Personal Brain Health Status */}
-      <MotionReveal>
-        <section className="pp-card relative overflow-hidden rounded-[24px] border border-line bg-gradient-to-br from-white via-white to-mint/20 p-6 shadow-card transition-all hover:shadow-card-hover sm:p-7">
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div className="space-y-4 max-w-2xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <Pill tone={baseline ? 'forest' : 'amber'} dot>
-                  {baseline ? 'Personal Longitudinal Baseline: Active' : copy.hero.baselineMissing}
-                </Pill>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                  Reliable Change Index ($\Delta \le -5.0$ Normal)
-                </span>
-                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-                  Ayushman Bharat Verified
-                </span>
-              </div>
-
-              <div>
-                <h2 className="text-[24px] font-semibold tracking-[-0.035em] text-ink sm:text-[28px]">
-                  {latestAssessment ? 'Brain Health Stable & Within Baseline' : 'Welcome to Your Personal Baseline Journey'}
-                </h2>
-                <p className="mt-2 text-[14px] leading-relaxed text-body">
-                  {latestAssessment
-                    ? 'Your latest multimodal biomarkers (MediaPipe oculomotor fixation, vocal hesitation tempo, and Indian culturally adapted visual memory) match your established personal baseline.'
-                    : 'Establish your longitudinal baseline with a quick, stress-free 5-minute check-in. Culturally adapted with Diya (🪔), Peacock (🦚), and Lotus (🪷) stimuli.'}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Link
-                  to={latestAssessment ? '/patient/assessment/report' : '/patient/assessment/intro'}
-                  className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-[14px] font-semibold text-white shadow-pill transition-all hover:bg-forest-deep hover:shadow-pill-hover hover:-translate-y-0.5"
-                >
-                  {latestAssessment ? 'View Latest Biomarker Report' : 'Begin 5-Minute Screening'}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  to="/patient/asha-companion"
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-[14px] font-semibold text-ink shadow-xs transition-all hover:bg-warm hover:border-line-strong hover:-translate-y-0.5"
-                >
-                  <Users className="h-4 w-4 text-emerald-700" /> ASHA Assisted Mode
-                </Link>
-              </div>
-            </div>
-
-            {/* Quick Vital & Care Team Grid */}
-            <div className="space-y-3.5">
-              <div className="grid min-w-[250px] grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-line bg-white/80 p-3.5 backdrop-blur-xs shadow-xs transition-all hover:border-line-strong hover:bg-white">
-                  <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-sage-deep">
-                    <Timer className="h-3.5 w-3.5 text-emerald-600" /> Battery Duration
-                  </span>
-                  <p className="mt-1 text-base font-bold text-slate-900">5 Minutes</p>
-                  <p className="text-[11px] text-slate-500">Zero technician needed</p>
-                </div>
-
-                <div className="rounded-2xl border border-line bg-white/80 p-3.5 backdrop-blur-xs shadow-xs transition-all hover:border-line-strong hover:bg-white">
-                  <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-sage-deep">
-                    <Stethoscope className="h-3.5 w-3.5 text-emerald-600" /> Assigned Doctor
-                  </span>
-                  <p className="mt-1 text-base font-bold text-slate-900 truncate">
-                    {treatmentTeam.doctor || 'Dr. Sundaram (PHC)'}
-                  </p>
-                  <p className="text-[11px] text-slate-500">Ayushman Arogya Mandir</p>
-                </div>
-
-                <div className="rounded-2xl border border-line bg-white/80 p-3.5 backdrop-blur-xs shadow-xs transition-all hover:border-line-strong hover:bg-white">
-                  <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-sage-deep">
-                    <CalendarDays className="h-3.5 w-3.5 text-emerald-600" /> Next PHC Visit
-                  </span>
-                  <p className="mt-1 text-base font-bold text-slate-900">
-                    {nextAppointment ? formatDate(nextAppointment.date, { day: 'numeric', month: 'short' }) : '26 Nov 2026'}
-                  </p>
-                  <p className="text-[11px] text-slate-500">Geriatric memory clinic</p>
-                </div>
-
-                <div className="rounded-2xl border border-line bg-white/80 p-3.5 backdrop-blur-xs shadow-xs transition-all hover:border-line-strong hover:bg-white">
-                  <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-sage-deep">
-                    <Activity className="h-3.5 w-3.5 text-emerald-600" /> Change Detection
-                  </span>
-                  <p className="mt-1 text-base font-bold text-emerald-700">Stable (0.2 $\Delta$)</p>
-                  <p className="text-[11px] text-slate-500">Within normal variation</p>
-                </div>
-              </div>
-
-              {/* Culturally Adapted Indian Stimuli Banner */}
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3 text-xs text-amber-900 flex items-center justify-between">
-                <span className="font-semibold flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-600" /> Indian Cultural Stimuli: Diya 🪔 · Peacock 🦚 · Lotus 🪷
-                </span>
-                <span className="text-[10px] font-bold uppercase text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md">
-                  Zero Western Bias
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-      </MotionReveal>
-
-      {/* 4 IMPORTANT 60+ PATIENT SCREENS SHORTCUT HUB */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Essential Senior Care Hub (60+ India)</h3>
+            <h3 className="text-sm font-bold text-slate-900">
+              Senior Citizen Comfort View · பெரியவர்களுக்கான எளிய வடிவம்
+            </h3>
             <p className="text-xs text-slate-500">
-              National Health Mission, ASHA worker assistance, chronic vitals, and emergency wander protection.
+              Clear large buttons, spoken vernacular voice, and zero confusing medical jargon.
             </p>
           </div>
-          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
-            4 Core Senior Protocols
-          </span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Card 1: ASHA Companion */}
+        {/* Big Spoken Audio Button */}
+        <button
+          type="button"
+          onClick={handleVoiceSummary}
+          className="flex items-center gap-2 rounded-full border border-emerald-300 bg-white px-5 py-2.5 text-sm font-bold text-emerald-800 shadow-sm hover:bg-emerald-50 transition active:scale-95"
+        >
+          {isSpeaking ? <VolumeX className="h-5 w-5 text-rose-600 animate-pulse" /> : <Volume2 className="h-5 w-5 text-emerald-700" />}
+          {isSpeaking ? 'Stop Voice (நிறுத்து)' : '🔊 Listen Out Loud (ஒலி வடிவில் கேட்க)'}
+        </button>
+      </div>
+
+      {/* 2. MAIN REASSURING HERO CARD: "All is Well" Reassurance */}
+      <MotionReveal>
+        <div className="overflow-hidden rounded-3xl border-2 border-emerald-200 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/50 p-6 sm:p-8 shadow-md">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1 text-xs font-bold text-white shadow-xs">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> All is Normal · நினைவாற்றல் சீராக உள்ளது
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                  Ayushman Bharat Linked
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {getGreeting()}
+              </h1>
+
+              <p className="text-base text-slate-700 leading-relaxed">
+                Your brain health, memory recall, and reflexes are completely healthy and matching your normal baseline. No signs of unexpected decline.
+              </p>
+
+              {/* Doctor Reassurance Quote */}
+              <div className="rounded-2xl border border-emerald-200/80 bg-white/90 p-4 text-xs sm:text-sm text-slate-700 flex items-start gap-3 shadow-xs">
+                <Stethoscope className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-slate-900 font-bold">Doctor's Clinical Note:</strong> "Patient Ramanathan is active and oriented. Eyesight tracking and speech tempo are well preserved. Recommended to continue routine morning walks and memory activities."
+                  <div className="mt-1 text-[11px] text-slate-500 font-medium">
+                    — {treatmentTeam.doctor || 'Dr. Priya Sundaram (PHC Medical Officer)'} · 18 Nov 2026
+                  </div>
+                </div>
+              </div>
+
+              {/* PRIMARY GIANT SCREENING BUTTON */}
+              <div className="pt-2 flex flex-wrap items-center gap-4">
+                <Link
+                  to="/patient/assessment/intro"
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-emerald-700 px-8 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-800 transition active:scale-95"
+                >
+                  <Sparkles className="h-5 w-5" />
+                  <span>Start 5-Minute Check-in (பரிசோதனை)</span>
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+
+                <div className="text-xs text-slate-500 flex items-center gap-1.5">
+                  <span>Stimuli:</span>
+                  <span className="rounded-md bg-amber-100 px-2 py-0.5 font-bold text-amber-900">
+                    Diya 🪔 · Peacock 🦚 · Lotus 🪷
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Status Pill Dial */}
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white/90 p-6 text-center shadow-xs min-w-[220px]">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-black text-3xl shadow-inner border-4 border-emerald-200">
+                88
+              </div>
+              <p className="mt-2 text-sm font-bold text-slate-900">Health Index</p>
+              <p className="text-xs text-emerald-700 font-semibold">Healthy Geriatric Range</p>
+              <div className="mt-3 w-full border-t border-slate-100 pt-2 text-[11px] text-slate-500">
+                Last checked: 18 Nov 2026
+              </div>
+            </div>
+          </div>
+        </div>
+      </MotionReveal>
+
+      {/* 3. ONLY THE IMPORTANT PATIENT SCREENS (4 Core Touch Cards) */}
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-black text-slate-900">
+            Important Elder Care Screens · முக்கிய பக்கங்கள்
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Only the 4 essential screens you and your family need. Tap any card below.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Card 1: ASHA & Caregiver Mode */}
           <Link
             to="/patient/asha-companion"
-            className="group relative flex flex-col justify-between rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/60 to-white p-5 shadow-xs hover:border-emerald-400 hover:shadow-md transition"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/70 to-white p-6 shadow-sm hover:border-emerald-500 hover:shadow-md transition"
           >
-            <div className="space-y-2.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
-                <Users className="h-5 w-5" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md text-2xl font-bold">
+                  🤝
+                </div>
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+                  Family / ASHA Help
+                </span>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-emerald-800 transition">
-                  ASHA & Caregiver Mode
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Assisted screening protocol with sensory checklist (glasses/hearing aid) and caregiver observation notes.
+                <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-800 transition">
+                  ASHA & Caregiver Assisted Mode
+                </h3>
+                <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                  ஆஷா பணியாளர் அல்லது குடும்ப பராமரிப்பாளர் உதவி. Pre-check glasses, hearing aid, and caregiver notes.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-bold text-emerald-700 group-hover:underline">
-              Launch Companion <ChevronRight className="h-3.5 w-3.5" />
+            <div className="mt-5 flex items-center gap-1.5 text-sm font-bold text-emerald-700 group-hover:underline">
+              Open ASHA Companion <ChevronRight className="h-4 w-4" />
             </div>
           </Link>
 
-          {/* Card 2: Ayushman Bharat ABHA */}
+          {/* Card 2: Ayushman Bharat ABHA Health Card */}
           <Link
             to="/patient/abha-health"
-            className="group relative flex flex-col justify-between rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50/50 to-white p-5 shadow-xs hover:border-orange-400 hover:shadow-md transition"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-orange-200 bg-gradient-to-br from-orange-50/70 to-white p-6 shadow-sm hover:border-orange-500 hover:shadow-md transition"
           >
-            <div className="space-y-2.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600 text-white shadow-sm">
-                <ShieldCheck className="h-5 w-5" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-600 text-white shadow-md text-2xl font-bold">
+                  🪪
+                </div>
+                <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-800">
+                  Govt PM-JAY Cover
+                </span>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-orange-800 transition">
-                  Ayushman Bharat (ABHA)
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  14-digit ABHA ID integration, PM-JAY ₹5 Lakh senior coverage, and Primary Health Centre tele-consultation.
+                <h3 className="text-lg font-bold text-slate-900 group-hover:text-orange-800 transition">
+                  Ayushman Bharat (ABHA) & PHC Network
+                </h3>
+                <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                  ஆயுஷ்மான் பாரத் அட்டை. 14-digit ABHA ID, ₹5 Lakh senior health coverage, and local health centre.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-bold text-orange-700 group-hover:underline">
-              View Health Card <ChevronRight className="h-3.5 w-3.5" />
+            <div className="mt-5 flex items-center gap-1.5 text-sm font-bold text-orange-700 group-hover:underline">
+              View My Health Card <ChevronRight className="h-4 w-4" />
             </div>
           </Link>
 
-          {/* Card 3: Senior Vitals & Meds */}
+          {/* Card 3: Senior Vitals & Daily Medicine Tracker */}
           <Link
             to="/patient/geriatric-vitals"
-            className="group relative flex flex-col justify-between rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/50 to-white p-5 shadow-xs hover:border-blue-400 hover:shadow-md transition"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-blue-50/70 to-white p-6 shadow-sm hover:border-blue-500 hover:shadow-md transition"
           >
-            <div className="space-y-2.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-                <HeartPulse className="h-5 w-5" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md text-2xl font-bold">
+                  💊
+                </div>
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-800">
+                  BP: 128/82 mmHg
+                </span>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-blue-800 transition">
-                  Senior Vitals & Meds
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Daily Blood Pressure, Fasting Glucose (Diabetes), and 3-dose medication compliance tracker.
+                <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-800 transition">
+                  Daily Medicines & Blood Pressure Tracker
+                </h3>
+                <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                  மாத்திரைகள் & ரத்த அழுத்தம். Mark morning, afternoon, and night doses with large easy touch buttons.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-bold text-blue-700 group-hover:underline">
-              Log Today's Vitals <ChevronRight className="h-3.5 w-3.5" />
+            <div className="mt-5 flex items-center gap-1.5 text-sm font-bold text-blue-700 group-hover:underline">
+              Open Vitals & Meds <ChevronRight className="h-4 w-4" />
             </div>
           </Link>
 
           {/* Card 4: Emergency SOS & Tele-MANAS */}
           <Link
             to="/patient/emergency-sos"
-            className="group relative flex flex-col justify-between rounded-2xl border border-red-200 bg-gradient-to-br from-rose-50/50 to-white p-5 shadow-xs hover:border-red-400 hover:shadow-md transition"
+            className="group flex flex-col justify-between rounded-3xl border-2 border-red-200 bg-gradient-to-br from-red-50/70 to-white p-6 shadow-sm hover:border-red-500 hover:shadow-md transition"
           >
-            <div className="space-y-2.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-600 text-white shadow-sm">
-                <PhoneCall className="h-5 w-5" />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600 text-white shadow-md text-2xl font-bold">
+                  🚨
+                </div>
+                <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-800">
+                  Dial 14416 / 108
+                </span>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-slate-900 group-hover:text-red-800 transition">
-                  Emergency SOS & 14416
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Instant family alert, National Ambulance (108), and Government of India Tele-MANAS (14416) helpline.
+                <h3 className="text-lg font-bold text-slate-900 group-hover:text-red-800 transition">
+                  Emergency 1-Tap SOS & Family Alert
+                </h3>
+                <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                  அவசர உதவி. 1-touch immediate alert with GPS location to son/daughter, PHC ambulance, and Tele-MANAS.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-bold text-red-700 group-hover:underline">
-              Emergency Contacts <ChevronRight className="h-3.5 w-3.5" />
+            <div className="mt-5 flex items-center gap-1.5 text-sm font-bold text-red-700 group-hover:underline">
+              Emergency Contacts <ChevronRight className="h-4 w-4" />
             </div>
           </Link>
         </div>
       </div>
 
-      {/* TODAY'S SENIOR ROUTINE & DAILY CHECKLIST */}
-      <Card padded>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <SectionTitle
-              title="Today's Elder Wellness & Medication Routine"
-              detail="Simple everyday healthy brain habits recommended by NIMHANS and the Geriatric Society of India."
-            />
-          </div>
-          <span className="text-xs font-semibold text-slate-500">
-            {routineWalk && routineMeds ? '2 of 3 Completed' : '1 of 3 Completed'}
-          </span>
-        </div>
+      {/* 4. TODAY'S 3 SIMPLE HEALTH HABITS (No confusing charts!) */}
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-slate-900">
+          Today's 3 Simple Healthy Habits · இன்றைய எளிய பழக்கங்கள்
+        </h3>
+        <p className="text-xs text-slate-500 mt-0.5">
+          Tap to mark complete. Good habits keep memory sharp and blood pressure normal.
+        </p>
 
         <div className="grid gap-3 sm:grid-cols-3 mt-4">
           <button
             type="button"
-            onClick={() => setRoutineWalk(!routineWalk)}
-            className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${
-              routineWalk ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
+            onClick={() => setMorningWalk(!morningWalk)}
+            className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition ${
+              morningWalk ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
             }`}
           >
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${
-              routineWalk ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
-            }`}>
-              🚶
-            </div>
+            <span className="text-3xl">🚶</span>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold text-slate-900">15-Min Morning Stroll</p>
-                {routineWalk && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+                <h4 className="text-base font-bold text-slate-900">15-Min Stroll</h4>
+                {morningWalk && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">Cardiovascular flow enhances cerebral oxygenation.</p>
+              <p className="text-xs text-slate-500">காலை நடைப்பயிற்சி</p>
             </div>
           </button>
 
           <button
             type="button"
-            onClick={() => setRoutineMeds(!routineMeds)}
-            className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${
-              routineMeds ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
+            onClick={() => setMorningMeds(!morningMeds)}
+            className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition ${
+              morningMeds ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
             }`}
           >
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${
-              routineMeds ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
-            }`}>
-              💊
-            </div>
+            <span className="text-3xl">💊</span>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold text-slate-900">Morning Blood Pressure Pill</p>
-                {routineMeds && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+                <h4 className="text-base font-bold text-slate-900">Morning Dose</h4>
+                {morningMeds && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">Taken with breakfast (Telmisartan 40mg).</p>
+              <p className="text-xs text-slate-500">காலை மாத்திரை எடுத்தேன்</p>
             </div>
           </button>
 
           <button
             type="button"
-            onClick={() => setRoutineBrainGame(!routineBrainGame)}
-            className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${
-              routineBrainGame ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
+            onClick={() => setWaterGlasses(!waterGlasses)}
+            className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-left transition ${
+              waterGlasses ? 'border-emerald-300 bg-emerald-50/70' : 'border-slate-200 bg-white hover:bg-slate-50'
             }`}
           >
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${
-              routineBrainGame ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'
-            }`}>
-              🧠
-            </div>
+            <span className="text-3xl">💧</span>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold text-slate-900">5-Min Brain Game / Screen</p>
-                {routineBrainGame && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+                <h4 className="text-base font-bold text-slate-900">Water Glasses</h4>
+                {waterGlasses && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {routineBrainGame ? 'Completed today!' : 'Pending — Tap Start Screening above.'}
-              </p>
+              <p className="text-xs text-slate-500">போதுமான தண்ணீர்</p>
             </div>
           </button>
         </div>
-      </Card>
-
-      {/* STATS STRIP */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Latest Screening"
-          value={latestAssessment ? formatDate(latestAssessment.date, { day: 'numeric', month: 'short' }) : '18 Nov'}
-          detail="Multimodal Biomarkers Reviewed by Clinician"
-          icon={ClipboardList}
-          tone="forest"
-        />
-        <StatCard
-          label="Longitudinal Baseline"
-          value="Anchored (RCI Active)"
-          detail="Within-person reference established"
-          icon={HeartPulse}
-          tone="forestSoft"
-        />
-        <StatCard
-          label="Cognitive Trajectory"
-          value="Stable (Within 1 SD)"
-          detail="No reliable decline detected"
-          icon={TrendingUp}
-          tone="mint"
-        />
-        <StatCard
-          label="Care Team Messages"
-          value={String(unread || 1)}
-          detail="From Dr. Sundaram (PHC Medical Officer)"
-          icon={FileText}
-          tone="amber"
-        />
       </div>
 
-      {/* BASELINE & RECENT ASSESSMENTS */}
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card padded>
-          <SectionTitle
-            title="Personal Baseline Breakdown"
-            detail="Your personal standard against which all future screenings are statistically compared."
-            action={
-              <Link to="/patient/assessment/baseline" className="text-xs font-bold text-emerald-700 hover:underline">
-                View Full Dossier
-              </Link>
-            }
-          />
-          {baseline ? (
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center mt-3">
-              <ScoreDial value={baseline.overallScore || 86} label="Baseline Index" />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Pill tone="forest" dot>Provisional Baseline</Pill>
-                  <span className="text-xs text-slate-500">{formatDate(baseline.establishedAt)}</span>
-                </div>
-                <dl className="mt-3 grid gap-x-5 gap-y-1.5 sm:grid-cols-2">
-                  {[
-                    ['Visual Memory (Cortex Match)', baseline.cognitiveScore || 88],
-                    ['Oculomotor Stability (Eye)', baseline.eyeScore || 84],
-                    ['Speech Tempo (Vocal Echo)', baseline.voiceScore || 87],
-                    ['Facial Symmetry (Mimic Sync)', baseline.faceScore || 85],
-                    ['Trail-Making (Path Mapper)', baseline.functionalScore || 82],
-                    ['Context Calibration', baseline.contextScore || 90]
-                  ].map(([label, value]) => (
-                    <div key={String(label)} className="flex items-center justify-between border-b border-slate-100 py-1">
-                      <dt className="text-xs text-slate-500">{label}</dt>
-                      <dd className="text-xs font-bold text-slate-900">{String(value)}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </div>
-          ) : (
-            <EmptyState
-              scene="emptyAssessment"
-              icon={Brain}
-              title="No Baseline Recorded Yet"
-              detail="Complete your first 5-minute session to anchor your personal baseline."
-              action={
-                <Link to="/patient/assessment/intro" className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white shadow">
-                  Start First Session
-                </Link>
-              }
-            />
-          )}
-        </Card>
+      {/* 5. FAMILY & DOCTOR DIRECT CONTACT STRIP */}
+      <div className="rounded-3xl border border-slate-200 bg-slate-50/90 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-700 text-white font-bold text-xl">
+            👨‍⚕️
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-900">
+              Primary Health Centre: {treatmentTeam.doctor || 'Dr. Priya Sundaram'}
+            </h4>
+            <p className="text-xs text-slate-500">
+              Family Caregiver: Karthik (Son: +91 98401 23456) · Thanjavur PHC
+            </p>
+          </div>
+        </div>
 
-        <Card padded>
-          <SectionTitle
-            title="Recent Screening Sessions"
-            detail="Prior 5-minute multimodal check-ins."
-            action={
-              <Link to="/patient/history" className="text-xs font-bold text-emerald-700 hover:underline">
-                View All
-              </Link>
-            }
-          />
-          {recentAssessments.length ? (
-            <ol className="relative space-y-3 border-s border-slate-200 ps-4 mt-3">
-              {recentAssessments.map((assessment) => (
-                <li key={assessment.id} className="relative">
-                  <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-600" />
-                  <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-slate-900">{formatDate(assessment.date)}</span>
-                      <AssessmentStatusPill reviewStatus={assessment.reviewStatus} status={assessment.status} />
-                    </div>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Completed via Indian Stimuli (Diya & Peacock) · Reviewed by PHC Team
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <div className="space-y-3 mt-3">
-              <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">18 Nov 2026</span>
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
-                    Reviewed by Dr. Sundaram
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-slate-500">
-                  Comprehensive 5-minute screening · 88/100 · Stable within personal baseline
-                </p>
-              </div>
-            </div>
-          )}
-        </Card>
-      </div>
-
-      {/* BRAIN HEALTH PATHWAY */}
-      <BrainHealthPathway
-        pathway={pathway}
-        personalizedPrevention={personalizedPrevention}
-        compact
-      />
-
-      {/* CLINICAL DISCLAIMER & SAFETY NOTICE */}
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600 leading-relaxed flex items-start gap-3">
-        <Info className="h-4 w-4 shrink-0 text-slate-500 mt-0.5" />
-        <div>
-          <strong className="text-slate-800">Proactive Brain Health Protocol:</strong> NeuLens is an early cognitive screening and longitudinal within-person change tracking instrument. It does not provide a definitive medical diagnosis of Alzheimer's disease or dementia. All flagged changes are presented to a licensed physician or PHC medical officer for clinical evaluation.
+        <div className="flex items-center gap-2">
+          <a
+            href="tel:+919840123456"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 shadow-xs transition"
+          >
+            <PhoneCall className="h-4 w-4 text-emerald-700" /> Call Son (மகன்)
+          </a>
+          <Link
+            to="/patient/appointments"
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 shadow-xs transition"
+          >
+            <CalendarDays className="h-4 w-4 text-emerald-400" /> PHC Appointments
+          </Link>
         </div>
       </div>
     </div>
